@@ -8,7 +8,7 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 
 ---
 
-## LLM Inference Stack — 12-Project Series
+## LLM Inference Stack — 13-Project Series
 
 | Project | Focus | Key Finding |
 |---------|-------|-------------|
@@ -21,9 +21,10 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 | [moe-router-sim](https://github.com/JohnScheuer/moe-router-sim) | MoE routing and load balancing | ExpertChoice best balance; NoisyTopK best practical tradeoff |
 | [admission-control-sim](https://github.com/JohnScheuer/admission-control-sim) | Admission control under overload | Tight token budget maximizes goodput; proactive beats reactive |
 | [kv-cache-disaggregation-sim](https://github.com/JohnScheuer/kv-cache-disaggregation-sim) | Prefill/decode disaggregation | Disagg wins only at arrival>=20 AND prompt>=1024; 29% TTFT gain |
-| [speculative-decoding-validation](https://github.com/JohnScheuer/speculative-decoding-validation) | Real GPU validation | Simulation predictions confirmed: median 1.14x speedup with KV cache |
+| [speculative-decoding-validation](https://github.com/JohnScheuer/speculative-decoding-validation) | Real GPU validation | Simulation predictions confirmed: median 1.14x speedup |
 | [quantization-impact-analyzer](https://github.com/JohnScheuer/quantization-impact-analyzer) | Weight quantization sensitivity | INT8-g32: 1.8x compression, +0.13 PPL; group-wise reduces INT4 error 99% |
 | [latency-breakdown-simulator](https://github.com/JohnScheuer/latency-breakdown-simulator) | Where each millisecond goes | Compute = 99.8%; prefix cache saves 17% TTFT; disagg adds 8-20% overhead |
+| [request-lifecycle-tracker](https://github.com/JohnScheuer/request-lifecycle-tracker) | Per-request event tracing | 24 event types; full lifecycle from arrival to memory release |
 
 All projects: C++20 or Python, quantitative results, open source.
 
@@ -42,6 +43,7 @@ Optimizing one component in isolation is not enough.
 - Disaggregation that eliminates interference pays KV transfer cost instead
 - Quantization that maximizes compression destroys model quality
 - The breakdown shows: compute dominates, overhead is real but small
+- The lifecycle tracker reveals: every decision leaves a trace
 
 End-to-end systems thinking matters more than any single optimization.
 
@@ -49,7 +51,7 @@ End-to-end systems thinking matters more than any single optimization.
 
 ## Stack
 
-- **C++20** -- allocators, schedulers, caches, routers, simulators
+- **C++20** -- allocators, schedulers, caches, routers, simulators, tracers
 - **Python + PyTorch** -- real model validation, quantization analysis, sweeps
 - **CMake + Ninja** -- build system
 - Quantitative results with reproducible CSVs and plots
@@ -58,6 +60,6 @@ End-to-end systems thinking matters more than any single optimization.
 
 ## Currently Exploring
 
-- Concurrency model for latency breakdown under high load
-- Waterfall/Gantt chart visualization per request
+- Waterfall/Gantt chart visualization from lifecycle traces
+- Concurrency model for realistic queue buildup under load
 - Integration with real GPU timing traces
