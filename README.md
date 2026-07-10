@@ -8,7 +8,7 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 
 ---
 
-## LLM Inference Stack — 11-Project Series
+## LLM Inference Stack — 12-Project Series
 
 | Project | Focus | Key Finding |
 |---------|-------|-------------|
@@ -22,9 +22,10 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 | [admission-control-sim](https://github.com/JohnScheuer/admission-control-sim) | Admission control under overload | Tight token budget maximizes goodput; proactive beats reactive |
 | [kv-cache-disaggregation-sim](https://github.com/JohnScheuer/kv-cache-disaggregation-sim) | Prefill/decode disaggregation | Disagg wins only at arrival>=20 AND prompt>=1024; 29% TTFT gain |
 | [speculative-decoding-validation](https://github.com/JohnScheuer/speculative-decoding-validation) | Real GPU validation | Simulation predictions confirmed: median 1.14x speedup with KV cache |
-| [quantization-impact-analyzer](https://github.com/JohnScheuer/quantization-impact-analyzer) | Weight quantization sensitivity | INT8-g32: 1.8x compression, +0.13 PPL; group-wise reduces INT4 error by 99% |
+| [quantization-impact-analyzer](https://github.com/JohnScheuer/quantization-impact-analyzer) | Weight quantization sensitivity | INT8-g32: 1.8x compression, +0.13 PPL; group-wise reduces INT4 error 99% |
+| [latency-breakdown-simulator](https://github.com/JohnScheuer/latency-breakdown-simulator) | Where each millisecond goes | Compute = 99.8%; prefix cache saves 17% TTFT; disagg adds 8-20% overhead |
 
-All projects: Python or C++20, quantitative results, open source.
+All projects: C++20 or Python, quantitative results, open source.
 
 ---
 
@@ -40,6 +41,7 @@ Optimizing one component in isolation is not enough.
 - Admission control that accepts everything destroys goodput under overload
 - Disaggregation that eliminates interference pays KV transfer cost instead
 - Quantization that maximizes compression destroys model quality
+- The breakdown shows: compute dominates, overhead is real but small
 
 End-to-end systems thinking matters more than any single optimization.
 
@@ -56,6 +58,6 @@ End-to-end systems thinking matters more than any single optimization.
 
 ## Currently Exploring
 
-- Real quantization with bitsandbytes NF4
-- Calibration data effect on group-wise quantization quality
-- Sensitivity patterns across model sizes (GPT-2 Medium, Large, XL)
+- Concurrency model for latency breakdown under high load
+- Waterfall/Gantt chart visualization per request
+- Integration with real GPU timing traces
