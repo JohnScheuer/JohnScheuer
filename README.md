@@ -2,13 +2,13 @@
 
 Systems engineer focused on LLM inference infrastructure, GPU memory systems, and serving optimization.
 
-I build simulators and tools to study the latency, memory, throughput, routing, and quantization tradeoffs inside LLM serving systems.
+I build simulators and tools to study the latency, memory, throughput, routing, and quantization tradeoffs inside LLM serving systems — and validate them against real GPU measurements.
 
 [LinkedIn](https://www.linkedin.com/in/joaofelipescheuer/)
 
 ---
 
-## LLM Inference Stack — 13-Project Series
+## LLM Inference Stack — 15-Project Series
 
 | Project | Focus | Key Finding |
 |---------|-------|-------------|
@@ -20,11 +20,12 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 | [speculative-decoding-sim](https://github.com/JohnScheuer/speculative-decoding-sim) | Speculative decoding | 6.06x max speedup; breakeven at cost_ratio = 0.25 |
 | [moe-router-sim](https://github.com/JohnScheuer/moe-router-sim) | MoE routing and load balancing | ExpertChoice best balance; NoisyTopK best practical tradeoff |
 | [admission-control-sim](https://github.com/JohnScheuer/admission-control-sim) | Admission control under overload | Tight token budget maximizes goodput; proactive beats reactive |
-| [kv-cache-disaggregation-sim](https://github.com/JohnScheuer/kv-cache-disaggregation-sim) | Prefill/decode disaggregation | Disagg wins only at arrival>=20 AND prompt>=1024; 29% TTFT gain |
-| [speculative-decoding-validation](https://github.com/JohnScheuer/speculative-decoding-validation) | Real GPU validation | Simulation predictions confirmed: median 1.14x speedup |
+| [kv-cache-disaggregation-sim](https://github.com/JohnScheuer/kv-cache-disaggregation-sim) | Prefill/decode disaggregation | Disagg wins at arrival>=20 AND prompt>=1024; 29% TTFT gain |
+| [speculative-decoding-validation](https://github.com/JohnScheuer/speculative-decoding-validation) | Real GPU validation | Median 1.14x speedup with KV cache; simulation confirmed |
 | [quantization-impact-analyzer](https://github.com/JohnScheuer/quantization-impact-analyzer) | Weight quantization sensitivity | INT8-g32: 1.8x compression, +0.13 PPL; group-wise reduces INT4 error 99% |
 | [latency-breakdown-simulator](https://github.com/JohnScheuer/latency-breakdown-simulator) | Where each millisecond goes | Compute = 99.8%; prefix cache saves 17% TTFT; disagg adds 8-20% overhead |
 | [request-lifecycle-tracker](https://github.com/JohnScheuer/request-lifecycle-tracker) | Per-request event tracing | 24 event types; full lifecycle from arrival to memory release |
+| [real-model-profiler](https://github.com/JohnScheuer/real-model-profiler) | Real GPU cost measurement | Prefill: 30-70 us/tok; decode memory-bound at 5300-10800 us/tok single-req |
 
 All projects: C++20 or Python, quantitative results, open source.
 
@@ -43,7 +44,7 @@ Optimizing one component in isolation is not enough.
 - Disaggregation that eliminates interference pays KV transfer cost instead
 - Quantization that maximizes compression destroys model quality
 - The breakdown shows: compute dominates, overhead is real but small
-- The lifecycle tracker reveals: every decision leaves a trace
+- Real measurements show: simulation defaults are correct for server-level batching
 
 End-to-end systems thinking matters more than any single optimization.
 
@@ -52,9 +53,9 @@ End-to-end systems thinking matters more than any single optimization.
 ## Stack
 
 - **C++20** -- allocators, schedulers, caches, routers, simulators, tracers
-- **Python + PyTorch** -- real model validation, quantization analysis, sweeps
+- **Python + PyTorch** -- real model profiling, validation, quantization, sweeps
 - **CMake + Ninja** -- build system
-- Quantitative results with reproducible CSVs and plots
+- **RTX 2070 (8GB)** -- GPU for real measurements
 
 ---
 
@@ -62,4 +63,4 @@ End-to-end systems thinking matters more than any single optimization.
 
 - Waterfall/Gantt chart visualization from lifecycle traces
 - Concurrency model for realistic queue buildup under load
-- Integration with real GPU timing traces
+- Adaptive K selection for speculative decoding based on real acceptance rates
