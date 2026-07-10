@@ -2,13 +2,13 @@
 
 Systems engineer focused on LLM inference infrastructure, GPU memory systems, and serving optimization.
 
-I build simulators and tools to study the latency, memory, and throughput tradeoffs inside LLM serving systems.
+I build simulators and tools to study the latency, memory, throughput, and routing tradeoffs inside LLM serving systems.
 
 [LinkedIn](https://www.linkedin.com/in/joaofelipescheuer/)
 
 ---
 
-## LLM Inference Stack — 6-Project Series
+## LLM Inference Stack — 7-Project Series
 
 I implemented the memory and serving layer of an LLM server from scratch,
 one component at a time, then integrated everything into an end-to-end simulator.
@@ -21,6 +21,7 @@ one component at a time, then integrated everything into an end-to-end simulator
 | [tensor-memory-allocator](https://github.com/JohnScheuer/tensor-memory-allocator) | GPU tensor memory allocation | Free-list beats buddy/slab for continuous size distributions |
 | [llm-serving-sim](https://github.com/JohnScheuer/llm-serving-sim) | End-to-end LLM serving | ChunkedPrefill + LFU: 41% lower TTFT p95, 94% prefix hit rate |
 | [speculative-decoding-sim](https://github.com/JohnScheuer/speculative-decoding-sim) | Speculative decoding | 6.06x max speedup; breakeven at cost_ratio = 0.25 |
+| [moe-router-sim](https://github.com/JohnScheuer/moe-router-sim) | MoE routing and load balancing | ExpertChoice best balance; NoisyTopK best practical tradeoff |
 
 All projects: C++20 core, Python sweeps and plots, quantitative results, open source.
 
@@ -34,6 +35,7 @@ Optimizing one component in isolation is not enough.
 - The prefix cache that saves compute also consumes memory
 - The allocator that reduces fragmentation can increase lookup cost
 - Speculative decoding can hurt throughput if the draft model is too expensive
+- The MoE router that achieves perfect balance sacrifices expert specialization
 
 End-to-end systems thinking matters more than any single optimization.
 
@@ -41,7 +43,7 @@ End-to-end systems thinking matters more than any single optimization.
 
 ## Stack
 
-- **C++20** — allocators, schedulers, caches, simulators
+- **C++20** — allocators, schedulers, caches, routers, simulators
 - **Python** — sweeps, plots, analysis (pandas, matplotlib)
 - **CMake + Ninja** — build system
 - Quantitative sweeps with reproducible plots and CSV results
@@ -51,5 +53,5 @@ End-to-end systems thinking matters more than any single optimization.
 ## Currently Exploring
 
 - Validating simulation results against real PyTorch and CUDA behavior
-- Mixture-of-Experts routing and load balancing
 - Multi-GPU placement and memory transfer modeling
+- Adaptive routing for MoE under dynamic load
