@@ -8,7 +8,7 @@ I build simulators and tools to study the latency, memory, throughput, and routi
 
 ---
 
-## LLM Inference Stack — 7-Project Series
+## LLM Inference Stack — 8-Project Series
 
 I implemented the memory and serving layer of an LLM server from scratch,
 one component at a time, then integrated everything into an end-to-end simulator.
@@ -22,6 +22,7 @@ one component at a time, then integrated everything into an end-to-end simulator
 | [llm-serving-sim](https://github.com/JohnScheuer/llm-serving-sim) | End-to-end LLM serving | ChunkedPrefill + LFU: 41% lower TTFT p95, 94% prefix hit rate |
 | [speculative-decoding-sim](https://github.com/JohnScheuer/speculative-decoding-sim) | Speculative decoding | 6.06x max speedup; breakeven at cost_ratio = 0.25 |
 | [moe-router-sim](https://github.com/JohnScheuer/moe-router-sim) | MoE routing and load balancing | ExpertChoice best balance; NoisyTopK best practical tradeoff |
+| [admission-control-sim](https://github.com/JohnScheuer/admission-control-sim) | Admission control under overload | Tight token budget maximizes goodput; proactive beats reactive |
 
 All projects: C++20 core, Python sweeps and plots, quantitative results, open source.
 
@@ -36,6 +37,7 @@ Optimizing one component in isolation is not enough.
 - The allocator that reduces fragmentation can increase lookup cost
 - Speculative decoding can hurt throughput if the draft model is too expensive
 - The MoE router that achieves perfect balance sacrifices expert specialization
+- Admission control that accepts everything destroys goodput under overload
 
 End-to-end systems thinking matters more than any single optimization.
 
@@ -54,4 +56,4 @@ End-to-end systems thinking matters more than any single optimization.
 
 - Validating simulation results against real PyTorch and CUDA behavior
 - Multi-GPU placement and memory transfer modeling
-- Adaptive routing for MoE under dynamic load
+- Adaptive admission control combining token budget and TTFT prediction
