@@ -2,16 +2,13 @@
 
 Systems engineer focused on LLM inference infrastructure, GPU memory systems, and serving optimization.
 
-I build simulators and tools to study the latency, memory, throughput, and routing tradeoffs inside LLM serving systems.
+I build simulators and tools to study the latency, memory, throughput, routing, and quantization tradeoffs inside LLM serving systems.
 
 [LinkedIn](https://www.linkedin.com/in/joaofelipescheuer/)
 
 ---
 
-## LLM Inference Stack — 10-Project Series
-
-I implemented the memory and serving layer of an LLM server from scratch,
-one component at a time, then integrated everything and validated against real GPU behavior.
+## LLM Inference Stack — 11-Project Series
 
 | Project | Focus | Key Finding |
 |---------|-------|-------------|
@@ -24,9 +21,10 @@ one component at a time, then integrated everything and validated against real G
 | [moe-router-sim](https://github.com/JohnScheuer/moe-router-sim) | MoE routing and load balancing | ExpertChoice best balance; NoisyTopK best practical tradeoff |
 | [admission-control-sim](https://github.com/JohnScheuer/admission-control-sim) | Admission control under overload | Tight token budget maximizes goodput; proactive beats reactive |
 | [kv-cache-disaggregation-sim](https://github.com/JohnScheuer/kv-cache-disaggregation-sim) | Prefill/decode disaggregation | Disagg wins only at arrival>=20 AND prompt>=1024; 29% TTFT gain |
-| [speculative-decoding-validation](https://github.com/JohnScheuer/speculative-decoding-validation) | Real GPU validation | Simulation predictions validated: acceptance 53-56%, speedup matches predicted regime |
+| [speculative-decoding-validation](https://github.com/JohnScheuer/speculative-decoding-validation) | Real GPU validation | Simulation predictions confirmed: median 1.14x speedup with KV cache |
+| [quantization-impact-analyzer](https://github.com/JohnScheuer/quantization-impact-analyzer) | Weight quantization sensitivity | INT8-g32: 1.8x compression, +0.13 PPL; group-wise reduces INT4 error by 99% |
 
-All projects: C++20 or Python, quantitative results, open source.
+All projects: Python or C++20, quantitative results, open source.
 
 ---
 
@@ -41,6 +39,7 @@ Optimizing one component in isolation is not enough.
 - The MoE router that achieves perfect balance sacrifices expert specialization
 - Admission control that accepts everything destroys goodput under overload
 - Disaggregation that eliminates interference pays KV transfer cost instead
+- Quantization that maximizes compression destroys model quality
 
 End-to-end systems thinking matters more than any single optimization.
 
@@ -48,15 +47,15 @@ End-to-end systems thinking matters more than any single optimization.
 
 ## Stack
 
-- **C++20** — allocators, schedulers, caches, routers, simulators
-- **Python + PyTorch** — real model validation, sweeps, plots
-- **CMake + Ninja** — build system
-- Quantitative sweeps with reproducible plots and CSV results
+- **C++20** -- allocators, schedulers, caches, routers, simulators
+- **Python + PyTorch** -- real model validation, quantization analysis, sweeps
+- **CMake + Ninja** -- build system
+- Quantitative results with reproducible CSVs and plots
 
 ---
 
 ## Currently Exploring
 
-- Implementing past_key_values draft optimization to cross the 1.0x speedup threshold
-- Multi-GPU placement and memory transfer modeling
-- Adaptive routing for MoE under dynamic load
+- Real quantization with bitsandbytes NF4
+- Calibration data effect on group-wise quantization quality
+- Sensitivity patterns across model sizes (GPT-2 Medium, Large, XL)
