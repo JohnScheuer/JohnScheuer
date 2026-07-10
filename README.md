@@ -8,7 +8,7 @@ I build simulators and tools to study the latency, memory, throughput, and routi
 
 ---
 
-## LLM Inference Stack — 8-Project Series
+## LLM Inference Stack — 9-Project Series
 
 I implemented the memory and serving layer of an LLM server from scratch,
 one component at a time, then integrated everything into an end-to-end simulator.
@@ -23,6 +23,7 @@ one component at a time, then integrated everything into an end-to-end simulator
 | [speculative-decoding-sim](https://github.com/JohnScheuer/speculative-decoding-sim) | Speculative decoding | 6.06x max speedup; breakeven at cost_ratio = 0.25 |
 | [moe-router-sim](https://github.com/JohnScheuer/moe-router-sim) | MoE routing and load balancing | ExpertChoice best balance; NoisyTopK best practical tradeoff |
 | [admission-control-sim](https://github.com/JohnScheuer/admission-control-sim) | Admission control under overload | Tight token budget maximizes goodput; proactive beats reactive |
+| [kv-cache-disaggregation-sim](https://github.com/JohnScheuer/kv-cache-disaggregation-sim) | Prefill/decode disaggregation | Disagg wins only at arrival>=20 AND prompt>=1024; 29% TTFT gain |
 
 All projects: C++20 core, Python sweeps and plots, quantitative results, open source.
 
@@ -38,6 +39,7 @@ Optimizing one component in isolation is not enough.
 - Speculative decoding can hurt throughput if the draft model is too expensive
 - The MoE router that achieves perfect balance sacrifices expert specialization
 - Admission control that accepts everything destroys goodput under overload
+- Disaggregation that eliminates interference pays KV transfer cost instead
 
 End-to-end systems thinking matters more than any single optimization.
 
@@ -55,5 +57,5 @@ End-to-end systems thinking matters more than any single optimization.
 ## Currently Exploring
 
 - Validating simulation results against real PyTorch and CUDA behavior
-- Multi-GPU placement and memory transfer modeling
-- Adaptive admission control combining token budget and TTFT prediction
+- Chunked KV transfer and pipeline overlap with decode
+- Dynamic disaggregation: switching modes based on observed load
