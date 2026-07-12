@@ -28,6 +28,7 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 | [real-model-profiler](https://github.com/JohnScheuer/real-model-profiler) | Real GPU cost measurement | Prefill: 30-70 us/tok; decode memory-bound at 5300-10800 us/tok |
 | [attention-kernel-profiler](https://github.com/JohnScheuer/attention-kernel-profiler) | Attention kernel profiling | sdpa 7.64x faster than naive; memory O(n^0.25) vs O(n^2) at seq=2048 |
 | [continuous-batching-profiler](https://github.com/JohnScheuer/continuous-batching-profiler) | Real continuous batching on GPU | ChunkedPrefill is a fairness mechanism; EagerContBatch wins on mean TTFT |
+| [kv-cache-profiler-real](https://github.com/JohnScheuer/kv-cache-profiler-real) | Real KV cache measurements | 36 KB/tok validated; compaction+decode 30% faster than compaction alone (CUDA stream overlap) |
 
 All projects: C++20 or Python, quantitative results, open source.
 
@@ -47,6 +48,7 @@ Optimizing one component in isolation is not enough.
 - Quantization that maximizes compression destroys model quality
 - Kernel choice matters more than model architecture at long sequences
 - ChunkedPrefill does not maximize mean TTFT -- it protects decode tail latency
+- Compaction during decode is 30% faster than alone (CUDA overlaps copy+compute streams)
 
 End-to-end systems thinking matters more than any single optimization.
 
