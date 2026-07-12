@@ -8,7 +8,7 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 
 ---
 
-## LLM Inference Stack — 16-Project Series
+## LLM Inference Stack — 17-Project Series
 
 | Project | Focus | Key Finding |
 |---------|-------|-------------|
@@ -26,8 +26,8 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 | [latency-breakdown-simulator](https://github.com/JohnScheuer/latency-breakdown-simulator) | Where each millisecond goes | Compute = 99.8%; prefix cache saves 17% TTFT; disagg adds 8-20% overhead |
 | [request-lifecycle-tracker](https://github.com/JohnScheuer/request-lifecycle-tracker) | Per-request event tracing | 24 event types; full lifecycle from arrival to memory release |
 | [real-model-profiler](https://github.com/JohnScheuer/real-model-profiler) | Real GPU cost measurement | Prefill: 30-70 us/tok; decode memory-bound at 5300-10800 us/tok |
-| [quantization-impact-analyzer](https://github.com/JohnScheuer/quantization-impact-analyzer) | Weight quantization | INT8-g32: 1.8x compression, +0.13 PPL |
 | [attention-kernel-profiler](https://github.com/JohnScheuer/attention-kernel-profiler) | Attention kernel profiling | sdpa 7.64x faster than naive; memory O(n^0.25) vs O(n^2) at seq=2048 |
+| [continuous-batching-profiler](https://github.com/JohnScheuer/continuous-batching-profiler) | Real continuous batching on GPU | ChunkedPrefill is a fairness mechanism; EagerContBatch wins on mean TTFT |
 
 All projects: C++20 or Python, quantitative results, open source.
 
@@ -46,6 +46,7 @@ Optimizing one component in isolation is not enough.
 - Disaggregation that eliminates interference pays KV transfer cost instead
 - Quantization that maximizes compression destroys model quality
 - Kernel choice matters more than model architecture at long sequences
+- ChunkedPrefill does not maximize mean TTFT -- it protects decode tail latency
 
 End-to-end systems thinking matters more than any single optimization.
 
@@ -54,7 +55,7 @@ End-to-end systems thinking matters more than any single optimization.
 ## Stack
 
 - **C++20** -- allocators, schedulers, caches, routers, simulators, tracers
-- **Python + PyTorch** -- real model profiling, attention kernels, quantization
+- **Python + PyTorch** -- real model profiling, attention kernels, quantization, serving
 - **CMake + Ninja** -- build system
 - **RTX 2070 (8GB, sm75)** -- GPU for real measurements
 
@@ -62,6 +63,6 @@ End-to-end systems thinking matters more than any single optimization.
 
 ## Currently Exploring
 
-- FlashAttention on sm80+ hardware for direct comparison
-- Per-layer attention cost inside GPT-2 forward pass
-- Chunked attention for very long sequences
+- Real batched decode with paged attention
+- Per-token streaming latency under realistic load
+- Comparing simulation predictions with vLLM production metrics
