@@ -8,7 +8,7 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 
 ---
 
-## LLM Inference Stack — 15-Project Series
+## LLM Inference Stack — 16-Project Series
 
 | Project | Focus | Key Finding |
 |---------|-------|-------------|
@@ -25,7 +25,9 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 | [quantization-impact-analyzer](https://github.com/JohnScheuer/quantization-impact-analyzer) | Weight quantization sensitivity | INT8-g32: 1.8x compression, +0.13 PPL; group-wise reduces INT4 error 99% |
 | [latency-breakdown-simulator](https://github.com/JohnScheuer/latency-breakdown-simulator) | Where each millisecond goes | Compute = 99.8%; prefix cache saves 17% TTFT; disagg adds 8-20% overhead |
 | [request-lifecycle-tracker](https://github.com/JohnScheuer/request-lifecycle-tracker) | Per-request event tracing | 24 event types; full lifecycle from arrival to memory release |
-| [real-model-profiler](https://github.com/JohnScheuer/real-model-profiler) | Real GPU cost measurement | Prefill: 30-70 us/tok; decode memory-bound at 5300-10800 us/tok single-req |
+| [real-model-profiler](https://github.com/JohnScheuer/real-model-profiler) | Real GPU cost measurement | Prefill: 30-70 us/tok; decode memory-bound at 5300-10800 us/tok |
+| [quantization-impact-analyzer](https://github.com/JohnScheuer/quantization-impact-analyzer) | Weight quantization | INT8-g32: 1.8x compression, +0.13 PPL |
+| [attention-kernel-profiler](https://github.com/JohnScheuer/attention-kernel-profiler) | Attention kernel profiling | sdpa 7.64x faster than naive; memory O(n^0.25) vs O(n^2) at seq=2048 |
 
 All projects: C++20 or Python, quantitative results, open source.
 
@@ -43,8 +45,7 @@ Optimizing one component in isolation is not enough.
 - Admission control that accepts everything destroys goodput under overload
 - Disaggregation that eliminates interference pays KV transfer cost instead
 - Quantization that maximizes compression destroys model quality
-- The breakdown shows: compute dominates, overhead is real but small
-- Real measurements show: simulation defaults are correct for server-level batching
+- Kernel choice matters more than model architecture at long sequences
 
 End-to-end systems thinking matters more than any single optimization.
 
@@ -53,14 +54,14 @@ End-to-end systems thinking matters more than any single optimization.
 ## Stack
 
 - **C++20** -- allocators, schedulers, caches, routers, simulators, tracers
-- **Python + PyTorch** -- real model profiling, validation, quantization, sweeps
+- **Python + PyTorch** -- real model profiling, attention kernels, quantization
 - **CMake + Ninja** -- build system
-- **RTX 2070 (8GB)** -- GPU for real measurements
+- **RTX 2070 (8GB, sm75)** -- GPU for real measurements
 
 ---
 
 ## Currently Exploring
 
-- Waterfall/Gantt chart visualization from lifecycle traces
-- Concurrency model for realistic queue buildup under load
-- Adaptive K selection for speculative decoding based on real acceptance rates
+- FlashAttention on sm80+ hardware for direct comparison
+- Per-layer attention cost inside GPT-2 forward pass
+- Chunked attention for very long sequences
