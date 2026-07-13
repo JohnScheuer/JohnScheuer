@@ -107,6 +107,26 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 💰 [inference-cost-calculator](https://github.com/JohnScheuer/inference-cost-calculator)
+
+> *How much does it cost to run 1 million tokens? When does buying a GPU pay off?*
+
+Cost analysis tool using real throughput measurements from my benchmarks.
+Covers 13 GPU configurations, 9 API providers, and 10 analyses.
+
+| | |
+|---|---|
+| Stack | Python · Pandas · Matplotlib · Rich |
+| Method | Cost model · Pareto frontier · ROI · sensitivity analysis |
+
+**Key findings:**
+- RTX-2070 local ($0.0008/1M tok) beats every cloud option on cost per token
+- No A100 cloud configuration beats local RTX in $/token — crossover needs 55× speedup
+- GPT-4o API costs 18,750× more than local electricity per token
+- RTX-2070 ($300 used) pays for itself in ~1 month vs A100 GCP spot at 250h/mo usage
+
+---
+
 ### 🖥️ [model-serving-benchmark](https://github.com/JohnScheuer/model-serving-benchmark)
 
 > *How much does serving strategy matter vs hardware?*
