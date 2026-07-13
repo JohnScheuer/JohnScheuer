@@ -29,6 +29,7 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 | [attention-kernel-profiler](https://github.com/JohnScheuer/attention-kernel-profiler) | Attention kernel profiling | sdpa 7.64x faster than naive; memory O(n^0.25) vs O(n^2) at seq=2048 |
 | [continuous-batching-profiler](https://github.com/JohnScheuer/continuous-batching-profiler) | Real continuous batching on GPU | ChunkedPrefill is a fairness mechanism; EagerContBatch wins on mean TTFT |
 | [kv-cache-profiler-real](https://github.com/JohnScheuer/kv-cache-profiler-real) | Real KV cache measurements | 36 KB/tok validated; compaction+decode 30% faster than compaction alone (CUDA stream overlap) |
+| [prefix-cache-real](https://github.com/JohnScheuer/prefix-cache-real) | Real prefix cache measurements | 2.41x speedup; breakeven n=2 (prefix=512) vs n=12 (prefix=128); LFU cache=4 + Zipf alpha=2 = 82% hit rate |
 
 All projects: C++20 or Python, quantitative results, open source.
 
@@ -49,6 +50,7 @@ Optimizing one component in isolation is not enough.
 - Kernel choice matters more than model architecture at long sequences
 - ChunkedPrefill does not maximize mean TTFT -- it protects decode tail latency
 - Compaction during decode is 30% faster than alone (CUDA overlaps copy+compute streams)
+- Prefix sharing breakeven depends on prefix length: n=2 for 512-tok prefix, n=12 for 128-tok prefix
 
 End-to-end systems thinking matters more than any single optimization.
 
