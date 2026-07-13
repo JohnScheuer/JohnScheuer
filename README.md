@@ -107,6 +107,48 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### ⚡ [speculative-decoding-impl](https://github.com/JohnScheuer/speculative-decoding-impl)
+
+> *Does speculative decoding actually speed up inference on consumer GPUs?*
+
+Real implementation of draft+verify speculative decoding measuring when it helps in practice.
+Compares GPT-2 → GPT-2-medium vs GPT-2 → GPT-2-large across 12 prompt types.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Greedy speculative decode · KV-cache management · prompt sweep |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- GPT-2 → GPT-2-large: mean best speedup **1.253×**, best case **1.846×**, 8/12 prompts positive
+- GPT-2 → GPT-2-medium: mean best speedup **1.013×**, 6/12 prompts positive
+- Speedup requires both high draft-target agreement and sufficiently expensive target
+- Speculative decoding is not universal — it is a conditional systems optimization
+
+---
+
+### 🔢 [quantization-profiler](https://github.com/JohnScheuer/quantization-profiler)
+
+> *Does lower precision actually speed up inference on consumer GPUs?*
+
+Empirical profiling of FP32, FP16, INT8, and INT4 quantization across 80 runs
+on GPT-2 and GPT-2-medium, with batch size sweep and perplexity tracking.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · bitsandbytes · Transformers |
+| Method | KV-cache decode benchmark · perplexity · batch sweep |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- FP16 is the best performance setting — 1.26–1.53× faster than FP32 at 50% memory
+- INT4 reduces model memory by 76–82% with perplexity delta < 0.003
+- On Turing-class GPUs, bitsandbytes quantization hurts decode throughput
+- The value of INT4/INT8 here is capacity, not speed
+
+---
+
 ### 💰 [inference-cost-calculator](https://github.com/JohnScheuer/inference-cost-calculator)
 
 > *How much does it cost to run 1 million tokens? When does buying a GPU pay off?*
