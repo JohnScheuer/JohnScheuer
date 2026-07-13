@@ -107,6 +107,48 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 🖥️ [model-serving-benchmark](https://github.com/JohnScheuer/model-serving-benchmark)
+
+> *How much does serving strategy matter vs hardware?*
+
+Benchmark comparing three LLM serving strategies on identical hardware:
+**Naive**, **KV-Cache only**, and **Continuous Batching**.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · FastAPI · httpx |
+| Method | Async load generator · TTFT · throughput · client latency |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Naive and KV-cache collapse under load — client latency grows 30× at concurrency=8
+- Batched server maintains 7–9ms TTFT regardless of concurrency
+- Batched reaches 4521 tok/s at concurrency=32 — 25.8× single-request throughput
+- KV-cache value only materializes when combined with batching
+
+---
+
+### 📈 [decode-batching-profiler](https://github.com/JohnScheuer/decode-batching-profiler)
+
+> *How does batch size affect decode throughput, latency, and GPU memory?*
+
+Empirical profiling of the decode path in GPT-2 and GPT-2-medium across
+batch sizes 1–64 and context lengths 128–960.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers · Matplotlib |
+| Method | CUDA-event timing · Pareto frontier · regime detection · 3x repeats |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Batching gives near-free throughput gains up to the compute-to-memory-bandwidth crossover
+- Crossover shifts left with longer context and larger models
+- At gpt2-medium ctx=960 bs=64, throughput collapses to 1.4% of linear expectation
+- Peak throughput batch is often not the best operating point — 90–97% of peak at ~half the latency
+
+---
+
 ### 🔬 [attention-sink-profiler](https://github.com/JohnScheuer/attention-sink-profiler)
 
 > *Empirical measurement of the attention sink phenomenon in real transformers.*
