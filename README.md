@@ -30,6 +30,7 @@ I build simulators and tools to study the latency, memory, throughput, routing, 
 | [continuous-batching-profiler](https://github.com/JohnScheuer/continuous-batching-profiler) | Real continuous batching on GPU | ChunkedPrefill is a fairness mechanism; EagerContBatch wins on mean TTFT |
 | [kv-cache-profiler-real](https://github.com/JohnScheuer/kv-cache-profiler-real) | Real KV cache measurements | 36 KB/tok validated; compaction+decode 30% faster than compaction alone (CUDA stream overlap) |
 | [prefix-cache-real](https://github.com/JohnScheuer/prefix-cache-real) | Real prefix cache measurements | 2.41x speedup; breakeven n=2 (prefix=512) vs n=12 (prefix=128); LFU cache=4 + Zipf alpha=2 = 82% hit rate |
+| [speculative-decoding-real-v2](https://github.com/JohnScheuer/speculative-decoding-real-v2) | Real speculative decoding (HF API) | 1.747x speedup (distilgpt2->gpt2-medium, n=512); cost_ratio and output_length confirmed as key parameters |
 
 All projects: C++20 or Python, quantitative results, open source.
 
@@ -51,6 +52,7 @@ Optimizing one component in isolation is not enough.
 - ChunkedPrefill does not maximize mean TTFT -- it protects decode tail latency
 - Compaction during decode is 30% faster than alone (CUDA overlaps copy+compute streams)
 - Prefix sharing breakeven depends on prefix length: n=2 for 512-tok prefix, n=12 for 128-tok prefix
+- Speculative decoding: 1.747x real speedup with distilgpt2->gpt2-medium at n=512 (HF API)
 
 End-to-end systems thinking matters more than any single optimization.
 
