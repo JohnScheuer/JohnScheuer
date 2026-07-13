@@ -1,74 +1,180 @@
-# Joao Felipe De Souza
+<h1 align="center">João Felipe De Souza</h1>
 
-Systems engineer focused on LLM inference infrastructure, GPU memory systems, and serving optimization.
+<p align="center">
+  <b>Systems Engineer · LLM Infrastructure · C++20 · Python</b>
+</p>
 
-I build simulators and tools to study the latency, memory, throughput, routing, and quantization tradeoffs inside LLM serving systems — and validate them against real GPU measurements.
-
-[LinkedIn](https://www.linkedin.com/in/joaofelipescheuer/)
-
----
-
-## LLM Inference Stack — 17-Project Series
-
-| Project | Focus | Key Finding |
-|---------|-------|-------------|
-| [kv-cache-compaction-lab](https://github.com/JohnScheuer/kv-cache-compaction-lab) | KV-cache page compaction | ThresholdCompaction dominates; 11 free-compaction points |
-| [prefix-cache-sim](https://github.com/JohnScheuer/prefix-cache-sim) | Prefix sharing with RadixTree | LFU dominates under Zipf; multi-turn hit rate 60%+ |
-| [llm-inference-scheduler](https://github.com/JohnScheuer/llm-inference-scheduler) | Continuous batching scheduler | ChunkedPrefill eliminates starvation; FCFS collapses under load |
-| [tensor-memory-allocator](https://github.com/JohnScheuer/tensor-memory-allocator) | GPU tensor memory allocation | Free-list beats buddy/slab for continuous size distributions |
-| [llm-serving-sim](https://github.com/JohnScheuer/llm-serving-sim) | End-to-end LLM serving | ChunkedPrefill + LFU: 41% lower TTFT p95, 94% prefix hit rate |
-| [speculative-decoding-sim](https://github.com/JohnScheuer/speculative-decoding-sim) | Speculative decoding | 6.06x max speedup; breakeven at cost_ratio = 0.25 |
-| [moe-router-sim](https://github.com/JohnScheuer/moe-router-sim) | MoE routing and load balancing | ExpertChoice best balance; NoisyTopK best practical tradeoff |
-| [admission-control-sim](https://github.com/JohnScheuer/admission-control-sim) | Admission control under overload | Tight token budget maximizes goodput; proactive beats reactive |
-| [kv-cache-disaggregation-sim](https://github.com/JohnScheuer/kv-cache-disaggregation-sim) | Prefill/decode disaggregation | Disagg wins at arrival>=20 AND prompt>=1024; 29% TTFT gain |
-| [speculative-decoding-validation](https://github.com/JohnScheuer/speculative-decoding-validation) | Real GPU validation | Median 1.14x speedup with KV cache; simulation confirmed |
-| [quantization-impact-analyzer](https://github.com/JohnScheuer/quantization-impact-analyzer) | Weight quantization sensitivity | INT8-g32: 1.8x compression, +0.13 PPL; group-wise reduces INT4 error 99% |
-| [latency-breakdown-simulator](https://github.com/JohnScheuer/latency-breakdown-simulator) | Where each millisecond goes | Compute = 99.8%; prefix cache saves 17% TTFT; disagg adds 8-20% overhead |
-| [request-lifecycle-tracker](https://github.com/JohnScheuer/request-lifecycle-tracker) | Per-request event tracing | 24 event types; full lifecycle from arrival to memory release |
-| [real-model-profiler](https://github.com/JohnScheuer/real-model-profiler) | Real GPU cost measurement | Prefill: 30-70 us/tok; decode memory-bound at 5300-10800 us/tok |
-| [attention-kernel-profiler](https://github.com/JohnScheuer/attention-kernel-profiler) | Attention kernel profiling | sdpa 7.64x faster than naive; memory O(n^0.25) vs O(n^2) at seq=2048 |
-| [continuous-batching-profiler](https://github.com/JohnScheuer/continuous-batching-profiler) | Real continuous batching on GPU | ChunkedPrefill is a fairness mechanism; EagerContBatch wins on mean TTFT |
-| [kv-cache-profiler-real](https://github.com/JohnScheuer/kv-cache-profiler-real) | Real KV cache measurements | 36 KB/tok validated; compaction+decode 30% faster than compaction alone (CUDA stream overlap) |
-| [prefix-cache-real](https://github.com/JohnScheuer/prefix-cache-real) | Real prefix cache measurements | 2.41x speedup; breakeven n=2 (prefix=512) vs n=12 (prefix=128); LFU cache=4 + Zipf alpha=2 = 82% hit rate |
-| [speculative-decoding-real-v2](https://github.com/JohnScheuer/speculative-decoding-real-v2) | Real speculative decoding (HF API) | 1.747x speedup (distilgpt2->gpt2-medium, n=512); cost_ratio and output_length confirmed as key parameters |
-
-All projects: C++20 or Python, quantitative results, open source.
+<p align="center">
+  <img src="https://img.shields.io/badge/Focus-LLM%20Inference%20Systems-blue?style=flat-square"/>
+  <img src="https://img.shields.io/badge/C%2B%2B-20-00599C?style=flat-square&logo=cplusplus"/>
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python"/>
+  <img src="https://img.shields.io/badge/Build-CMake%20%2B%20Ninja-064F8C?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Platform-WSL%20%7C%20Linux-lightgrey?style=flat-square"/>
+</p>
 
 ---
 
-## Core Systems Insight
+## About
 
-Optimizing one component in isolation is not enough.
+I build **low-level simulators and tools for LLM inference infrastructure**,
+focusing on memory management, scheduling, caching, and attention analysis.
 
-- The scheduler that minimizes TTFT hits OOM first under memory pressure
-- The prefix cache that saves compute also consumes memory
-- The allocator that reduces fragmentation can increase lookup cost
-- Speculative decoding can hurt throughput if the draft model is too expensive
-- The MoE router that achieves perfect balance sacrifices expert specialization
-- Admission control that accepts everything destroys goodput under overload
-- Disaggregation that eliminates interference pays KV transfer cost instead
-- Quantization that maximizes compression destroys model quality
-- Kernel choice matters more than model architecture at long sequences
-- ChunkedPrefill does not maximize mean TTFT -- it protects decode tail latency
-- Compaction during decode is 30% faster than alone (CUDA overlaps copy+compute streams)
-- Prefix sharing breakeven depends on prefix length: n=2 for 512-tok prefix, n=12 for 128-tok prefix
-- Speculative decoding: 1.747x real speedup with distilgpt2->gpt2-medium at n=512 (HF API)
-
-End-to-end systems thinking matters more than any single optimization.
+Each project is designed as a standalone research lab:
+measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ---
 
-## Stack
+## Portfolio
 
-- **C++20** -- allocators, schedulers, caches, routers, simulators, tracers
-- **Python + PyTorch** -- real model profiling, attention kernels, quantization, serving
-- **CMake + Ninja** -- build system
-- **RTX 2070 (8GB, sm75)** -- GPU for real measurements
+> Five projects that together cover the full LLM inference stack —
+> from scheduling to attention mechanics.
 
 ---
 
-## Currently Exploring
+### 🔧 [kv-cache-compaction-lab](https://github.com/JohnScheuer/kv-cache-compaction-lab)
 
-- Real batched decode with paged attention
-- Per-token streaming latency under realistic load
-- Comparing simulation predictions with vLLM production metrics
+> *How should an LLM server defragment its KV-cache memory?*
+
+A discrete-tick simulator comparing three compaction policies:
+**NoCompaction**, **GreedyCompaction**, and **ThresholdCompaction**.
+
+| | |
+|---|---|
+| Stack | C++20 + Python · CMake + Ninja |
+| Method | 2D parameter sweep (31 configurations) · Pareto frontier analysis |
+
+**Key findings:**
+- ThresholdCompaction dominates GreedyCompaction across the entire Pareto frontier
+- 11 "free compaction" configurations — zero observable latency impact
+- Optimal point: τ=0.473, κ=128 → 2 events in 120s, ΔP95 = 0.00ms
+
+---
+
+### 🌲 [prefix-cache-sim](https://github.com/JohnScheuer/prefix-cache-sim)
+
+> *How much latency can be saved by reusing KV-cache across requests?*
+
+A RadixTree-based prefix cache simulator with four eviction policies:
+**LRU**, **LFU**, **FIFO**, and **SizeLRU**.
+
+| | |
+|---|---|
+| Stack | C++20 + Python · CMake + Ninja |
+| Method | Hit rate sweep · multi-turn workloads · Zipf distribution |
+
+**Key findings:**
+- LFU dominates in small caches with skewed (Zipf) workloads
+- Multi-turn sessions push hit rate to 60%+
+- SizeLRU degrades with high alpha — blocks eviction of large nodes
+
+---
+
+### ⚡ [llm-inference-scheduler](https://github.com/JohnScheuer/llm-inference-scheduler)
+
+> *Which requests should run, in what order, and when to preempt?*
+
+A continuous-batching scheduler simulator with five scheduling policies:
+**FCFS**, **ContinuousBatching**, **Priority**, **SLOAware**, and **ChunkedPrefill**.
+
+| | |
+|---|---|
+| Stack | C++20 + Python · CMake + Ninja |
+| Method | Arrival rate sweep · SLO compliance analysis · preemption cost model |
+
+**Key findings:**
+- ChunkedPrefill eliminates prefill starvation — best TTFT across all loads
+- SLOAware achieves highest SLO compliance under mixed-priority workloads
+- FCFS collapses at high arrival rates — gpu_utilization drops below 40%
+
+---
+
+### 📊 [inference-dashboard](https://inference-dashboard-elt5ygbauvqecfukshtwew.streamlit.app/)
+
+> *Consolidated interactive dashboard for 20 research projects.*
+
+A single Streamlit dashboard aggregating all simulation and profiling results:
+10 subsystems, 1700+ runs, interactive Plotly visualizations.
+
+| | |
+|---|---|
+| Stack | Python · Streamlit · Plotly · Pandas |
+| Content | Speculative decoding, tensor allocator, MoE routing, KV disaggregation, attention kernels, prefix cache, real hardware profiling, continuous batching |
+
+**Key findings:**
+- Single link for portfolio presentation
+- Side-by-side simulation vs. real hardware comparison
+- Interactive charts — recrutadores não precisam instalar nada
+
+---
+
+### 🔬 [attention-sink-profiler](https://github.com/JohnScheuer/attention-sink-profiler)
+
+> *Empirical measurement of the attention sink phenomenon in real transformers.*
+
+Measures attention distribution in GPT-2 and GPT-2-medium, with per-head
+classification and masked-key ablation to assess functional impact on
+tail perplexity and output distribution.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers · Matplotlib |
+| Method | Attention map extraction · per-head analysis · ablation experiments |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Sink is structural/positional, not semantic (random > natural text > repeated)
+- Boost over uniform baseline reaches 82× for first 4 tokens at seq=1024
+- 60% of GPT-2 heads are sink-oriented; effect concentrates in deep layers
+- GPT-2-medium dilutes the sink compared to GPT-2 small
+- Masking first 8 tokens degrades tail perplexity more than middle or random windows
+
+---
+
+## How They Fit Together
+
+    +----------------------------------------------------------+
+    |          LLM Inference Server (simulated)                |
+    +------------------+-------------------+------------------+
+    |   Scheduler      |   Prefix Cache    |  KV Compaction   |
+    |                  |                   |                  |
+    |  llm-inference   |  prefix-cache-sim |  kv-cache-       |
+    |  -scheduler      |                   |  compaction-lab  |
+    +------------------+-------------------+------------------+
+      "what to run"      "what to reuse"    "how to manage RAM"
+
+    +----------------------------------------------------------+
+    |          Analysis & Visualization (across all)            |
+    |                                                          |
+    |  inference-dashboard  +  attention-sink-profiler         |
+    |  (interactive plots)     (attention mechanics)           |
+    +----------------------------------------------------------+
+
+Each project is independent and fully reproducible.
+Together they cover the full lifecycle of a request in an LLM server.
+
+---
+
+## Tech Stack
+
+| Area | Tools |
+|---|---|
+| Core simulation | C++20, STL, CMake, Ninja |
+| Deep learning | PyTorch, Transformers, CUDA |
+| Analysis & plots | Python, pandas, numpy, matplotlib, Plotly |
+| Dashboard | Streamlit, Plotly |
+| Research output | LaTeX tables, Pareto frontier, regime classification |
+| Environment | WSL, VS Code, GCC 15, Python 3.14 |
+
+---
+
+## Contact
+
+- GitHub: [@JohnScheuer](https://github.com/JohnScheuer)
+- Dashboard: [inference-dashboard.streamlit.app](https://inference-dashboard-elt5ygbauvqecfukshtwew.streamlit.app/)
+- Projects: see pinned repositories below
+
+---
+
+<p align="center">
+  <i>MIT License · Copyright (c) 2026 João Felipe De Souza</i>
+</p>
