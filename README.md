@@ -107,6 +107,27 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 🧠 [kv-cache-eviction-benchmark](https://github.com/JohnScheuer/kv-cache-eviction-benchmark)
+
+> *Which tokens should an LLM keep when it cannot retain the full KV-cache?*
+
+Real benchmark of KV-cache eviction policies on GPT-2-medium, comparing
+sliding windows, sink-preserving windows, random eviction, and attention-based eviction.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | DynamicCache manipulation · teacher-forced perplexity · budget sweep |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- At tiny cache budgets, sink-preserving heuristics massively beat sliding windows
+- At budget 64, sink8+window56 improves perplexity by ~59× over sliding_64 at the same memory
+- At moderate budgets, attention-based eviction becomes superior
+- attention_384 matches full-cache quality while cutting KV-cache by ~33%
+
+---
+
 ### ⚡ [speculative-decoding-impl](https://github.com/JohnScheuer/speculative-decoding-impl)
 
 > *Does speculative decoding actually speed up inference on consumer GPUs?*
