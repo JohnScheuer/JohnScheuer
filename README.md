@@ -107,6 +107,27 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### ⏱️ [prefill-chunking-profiler](https://github.com/JohnScheuer/prefill-chunking-profiler)
+
+> *Is chunked prefill a latency optimization — or a scheduling optimization?*
+
+Empirical profiling of full vs chunked prefill in both isolated and mixed-workload settings,
+showing that chunking hurts single-request TTFT but improves fairness under long-request interference.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | TTFT profiling · interleaving benchmark · fairness analysis |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Full prefill always wins isolated TTFT
+- Chunking only reduces peak memory modestly
+- In mixed workloads, chunking reduces short-request TTFT by ~20–23%
+- Chunk256 gives the best compromise between long-request latency and fairness
+
+---
+
 ### 🧠 [kv-cache-eviction-benchmark](https://github.com/JohnScheuer/kv-cache-eviction-benchmark)
 
 > *Which tokens should an LLM keep when it cannot retain the full KV-cache?*
