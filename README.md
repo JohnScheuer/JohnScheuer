@@ -107,6 +107,26 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 🔍 [multi-query-attention-profiler](https://github.com/JohnScheuer/multi-query-attention-profiler)
+
+> *How much KV-cache do GQA and MQA save — and at what quality cost?*
+
+Profiler comparing MHA, GQA, and MQA attention variants in KV-cache memory,
+decode throughput, and output fidelity via weight-collapsing proxy.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch |
+| Method | KV-cache measurement · fidelity proxy · 3x repeated benchmark |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- MQA reduces KV-cache by **92%** but drops cosine similarity to **0.269**
+- GQA-g2 halves KV-cache while preserving **~70%** fidelity — the industry sweet spot
+- Decode throughput differs by only ~10–20% across variants
+
+---
+
 ### 📅 [continuous-batching-scheduler](https://github.com/JohnScheuer/continuous-batching-scheduler)
 
 > *Which scheduling policy should serve LLM requests?*
