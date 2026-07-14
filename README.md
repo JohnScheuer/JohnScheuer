@@ -107,6 +107,27 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 📅 [continuous-batching-scheduler](https://github.com/JohnScheuer/continuous-batching-scheduler)
+
+> *Which scheduling policy should serve LLM requests?*
+
+Iteration-level continuous batching simulator comparing FCFS, SJF, Fair, and Preemptive
+policies on real GPU inference, validated across 5 random seeds.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Discrete-step simulation · Jain fairness · multi-seed validation |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- SJF reduces short-job TTFT by **81.5%** vs FCFS (17.1 vs 92.3 steps)
+- SJF achieves best throughput (5.43 tok/step)
+- SJF pays 34% lower Jain fairness vs FCFS
+- Preemptive scheduling consistently underperforms due to re-prefill overhead
+
+---
+
 ### ⏱️ [inference-latency-breakdown](https://github.com/JohnScheuer/inference-latency-breakdown)
 
 > *Where does every millisecond go in the LLM inference pipeline?*
