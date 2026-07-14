@@ -107,6 +107,27 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### ⏱️ [inference-latency-breakdown](https://github.com/JohnScheuer/inference-latency-breakdown)
+
+> *Where does every millisecond go in the LLM inference pipeline?*
+
+End-to-end latency profiler measuring tokenization, prefill, decode, and detokenization,
+plus sensitivity analysis and a predictive latency model.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Per-phase timing · sensitivity analysis · linear model fitting |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Decode accounts for **94–97%** of total latency
+- 2× faster decode improves e2e latency by **~47%**
+- 2× faster prefill improves e2e by only **~2.2–2.5%**
+- Total latency predicted with **~2–3% MAPE** using prompt and output length
+
+---
+
 ### 🧮 [gpu-memory-profiler](https://github.com/JohnScheuer/gpu-memory-profiler)
 
 > *Where does GPU memory actually go during transformer inference?*
