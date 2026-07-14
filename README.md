@@ -107,6 +107,27 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 🧮 [gpu-memory-profiler](https://github.com/JohnScheuer/gpu-memory-profiler)
+
+> *Where does GPU memory actually go during transformer inference?*
+
+VRAM breakdown profiler separating weights, KV-cache, and runtime overhead,
+with per-layer analysis, activation hooks, and a predictive memory model.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | CUDA memory stats · forward hooks · linear model fitting |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- FFN layers dominate static VRAM (56.8% of weights in GPT-2-medium)
+- Per-layer weight memory is perfectly uniform (std = 0.0000)
+- Runtime overhead explains why analytical KV-cache estimates underpredict by 2–4×
+- A fitted model predicts VRAM with R² = 0.999970 and <1.2% error
+
+---
+
 ### ⏱️ [prefill-chunking-profiler](https://github.com/JohnScheuer/prefill-chunking-profiler)
 
 > *Is chunked prefill a latency optimization — or a scheduling optimization?*
