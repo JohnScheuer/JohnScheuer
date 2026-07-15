@@ -107,6 +107,28 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### ⚡ [flash-attention-benchmark](https://github.com/JohnScheuer/flash-attention-benchmark)
+
+> *What attention optimization works on consumer Turing GPUs?*
+
+Benchmark of 4 attention backends including a custom Triton FlashAttention
+implementation that runs on RTX 2070 (sm 7.5) where official FlashAttention
+is unsupported.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Triton |
+| Method | Latency/memory profiling · custom Triton kernel |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- SDPA efficient achieves **130× less memory** and **10× faster** than vanilla at seq=4096
+- Custom Triton FlashAttention: **O(n) memory** but 64× slower than SDPA efficient
+- Vanilla and SDPA math OOM at batch≥2, seq≥16384
+- For Turing GPUs, SDPA efficient is the correct choice
+
+---
+
 ### 🔍 [multi-query-attention-profiler](https://github.com/JohnScheuer/multi-query-attention-profiler)
 
 > *How much KV-cache do GQA and MQA save — and at what quality cost?*
