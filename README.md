@@ -107,6 +107,26 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 🔤 [tokenizer-throughput-benchmark](https://github.com/JohnScheuer/tokenizer-throughput-benchmark)
+
+> *Is Tiktoken really faster? Not under concurrent serving.*
+
+Tokenization benchmark across GPT-2, LLaMA, Qwen2, and Tiktoken with
+concurrency analysis, serving simulation, and RPS capacity planning.
+
+| | |
+|---|---|
+| Stack | Python · Transformers · Tiktoken · SentencePiece |
+| Method | Thread/process parallelism · serving simulation · saturation test |
+
+**Key findings:**
+- Tiktoken is 2-4× faster single-threaded but **6.5× worse** under 1ms SLO
+- GPT-2 (HF) sustains **6536 RPS** at p99 < 1ms vs Tiktoken's **999 RPS**
+- HuggingFace releases GIL during Rust execution; Tiktoken holds it
+- Tiktoken wins 10-18× on detokenization (streaming decode)
+
+---
+
 ### ⚡ [flash-attention-benchmark](https://github.com/JohnScheuer/flash-attention-benchmark)
 
 > *What attention optimization works on consumer Turing GPUs?*
