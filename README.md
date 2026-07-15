@@ -107,6 +107,27 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 🏗️ [inference-pipeline-e2e](https://github.com/JohnScheuer/inference-pipeline-e2e)
+
+> *The capstone: a complete LLM serving pipeline with streaming and per-phase metrics.*
+
+End-to-end inference server with tokenize → prefill → decode → detokenize,
+SSE streaming, and async load testing.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · FastAPI · SSE · httpx |
+| Method | Per-phase timing · streaming output · concurrent load testing |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Tokenization + detokenization = **<0.2%** of total pipeline
+- Streaming reduces TTFT from **89ms → 32ms** (2.8× faster first token)
+- Decode throughput stays at **~41 tok/s** regardless of concurrency
+- TTFT degrades under concurrent streaming without batching
+
+---
+
 ### 📏 [long-context-benchmark](https://github.com/JohnScheuer/long-context-benchmark)
 
 > *How far can you push context on a consumer GPU?*
