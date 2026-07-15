@@ -107,6 +107,47 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 📏 [long-context-benchmark](https://github.com/JohnScheuer/long-context-benchmark)
+
+> *How far can you push context on a consumer GPU?*
+
+Long-context benchmark reaching 32K tokens on RTX 2070 by stacking SDPA + chunked prefill,
+with FP16 vs INT4 comparison.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers · bitsandbytes |
+| Method | Chunked prefill · SDPA · INT4 · capacity mapping |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- FP16 + SDPA reaches **32K context** at 12.6 tok/s (was OOM before)
+- **40× speedup** at 8K vs vanilla attention
+- INT4 **OOMs at 32K** — KV-cache is the real bottleneck, not model weights
+- Quantization is NOT a long-context solution
+
+---
+
+### 🧩 [moe-inference-sim](https://github.com/JohnScheuer/moe-inference-sim)
+
+> *How much GPU capacity does vanilla MoE routing waste?*
+
+MoE inference simulator with routing, load balancing, expert parallelism,
+and memory analysis across 360+ configurations.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch |
+| Method | Discrete simulation · load balance · expert parallelism |
+
+**Key findings:**
+- Vanilla routing on 8 shards: **19.3% efficiency** (81% waste)
+- Penalty routing on 8 shards: **99.4% efficiency**
+- Load imbalance drops from **56.89× → 1.01×** with penalty routing
+- Token dropping eliminated from **76% → 0%** with penalty strategy
+
+---
+
 ### 🔄 [rope-vs-absolute-pe-benchmark](https://github.com/JohnScheuer/rope-vs-absolute-pe-benchmark)
 
 > *How does positional encoding affect attention sinks and KV-cache eviction?*
