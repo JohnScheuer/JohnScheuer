@@ -563,13 +563,14 @@ tail perplexity and output distribution.
 
     +----------------------------------------------------------+
     |          LLM Inference Server (simulated)                |
-    +------------------+-------------------+------------------+
-    |   Scheduler      |   Prefix Cache    |  KV Compaction   |
-    |                  |                   |                  |
-    |  llm-inference   |  prefix-cache-sim |  kv-cache-       |
-    |  -scheduler      |                   |  compaction-lab  |
-    +------------------+-------------------+------------------+
-      "what to run"      "what to reuse"    "how to manage RAM"
+    +------------+-------------+-------------+----------------+
+    |  Scheduler |Prefix Cache | KV Compact. |   Paged Mem    |
+    |            |             |             |                |
+    | llm-infer  | prefix-     | kv-cache-   | paged-         |
+    | -scheduler | cache-sim   | compact-lab | attention-sim  |
+    +------------+-------------+-------------+----------------+
+     "what to run" "what to     "how to       "how to
+                    reuse"       defragment"   allocate"
 
     +----------------------------------------------------------+
     |          Hardware & Scaling Layer                        |
@@ -600,8 +601,8 @@ tail perplexity and output distribution.
 
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
-from scheduling and caching to parallelism modeling, hardware limits,
-and decoding optimization.
+from scheduling and caching to memory allocation, parallelism modeling,
+hardware limits, and decoding optimization.
 
 ---
 
