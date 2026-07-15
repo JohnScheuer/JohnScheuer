@@ -26,8 +26,9 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> Five projects that together cover the full LLM inference stack —
-> from scheduling to attention mechanics.
+> 24 projects covering the full LLM inference stack —
+> from memory management and scheduling to distributed parallelism,
+> speculative decoding, and long-context serving.
 
 ---
 
@@ -128,6 +129,32 @@ compute measurements with analytical alpha-beta models across PCIe 3.0 → NVLin
 - LLaMA-13B achieves **96.9% efficiency** at TP=2 on NVLink v3 — near-perfect linear speedup
 - PCIe 2-GPU TP costs **$0.092/1M tokens** — cheapest option for LLaMA-7B serving
 - Alpha-beta model validated empirically: R²=0.9996, Gloo adds **54× latency overhead** vs hardware
+
+---
+
+### 🔬 [speculative-decoding-real](https://github.com/JohnScheuer/speculative-decoding-real)
+
+> *Speculative decoding failed on my GPU. Here's exactly why.*
+
+Three-phase empirical study of speculative decoding using Qwen2-0.5B (draft)
+and Qwen2-1.5B (target) on a single RTX 2070. Measures acceptance rate,
+wall-clock speedup, per-phase time breakdown, and validates the Leviathan et al.
+(2023) analytical model.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | 3-phase benchmark · time breakdown · alpha dynamics · corrected analytical model |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Speedup **< 1.0 for all 32 configurations** — speculative decoding failed on single GPU
+- cost_ratio = **1.18x measured** vs 3.1x expected from parameter count — memory bandwidth equalization
+- KV sync overhead = **31.8% of step time** at gamma=1 — not in the analytical model
+- Temperature kills alpha: greedy=**0.767**, T=1.0=**0.083** — sampling is incompatible
+- gamma=8 has **highest alpha (0.750)** but lowest speedup — draft "in flow" effect
+- Analytical model correctly predicted failure: **zero false positives**
+- At cost_ratio=4.0 (7B target): simulated mean speedup **1.24x** — viable with right hardware
 
 ---
 
@@ -531,6 +558,16 @@ tail perplexity and output distribution.
       "how to scale"     "how far to push"  "which kernel"
 
     +----------------------------------------------------------+
+    |          Decoding & Generation Layer                     |
+    +------------------+-------------------+------------------+
+    |  Speculative     |  Quantization     |  Long Context    |
+    |                  |                   |                  |
+    |  speculative-    |  quantization-    |  long-context-   |
+    |  decoding-real   |  profiler         |  benchmark       |
+    +------------------+-------------------+------------------+
+      "when it helps"    "precision vs speed" "how far to push"
+
+    +----------------------------------------------------------+
     |          Analysis & Visualization (across all)           |
     |                                                          |
     |  inference-dashboard  +  attention-sink-profiler         |
@@ -539,7 +576,8 @@ tail perplexity and output distribution.
 
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
-from scheduling and caching to parallelism modeling and hardware limits.
+from scheduling and caching to parallelism modeling, hardware limits,
+and decoding optimization.
 
 ---
 
