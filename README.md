@@ -107,6 +107,27 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 🔄 [rope-vs-absolute-pe-benchmark](https://github.com/JohnScheuer/rope-vs-absolute-pe-benchmark)
+
+> *How does positional encoding affect attention sinks and KV-cache eviction?*
+
+Compares GPT-2-medium (absolute PE) vs Qwen2-0.5B (RoPE) across attention patterns,
+eviction tolerance, perplexity, and throughput.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Attention extraction · eviction simulation · perplexity scaling |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Absolute PE produces **37% stronger attention sinks** than RoPE
+- RoPE tolerates KV-cache eviction **~25% better**
+- Both PE types need sink-preserving policies for extreme compression
+- Perplexity scaling is similar between PE types
+
+---
+
 ### 🔤 [tokenizer-throughput-benchmark](https://github.com/JohnScheuer/tokenizer-throughput-benchmark)
 
 > *Is Tiktoken really faster? Not under concurrent serving.*
