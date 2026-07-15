@@ -121,11 +121,13 @@ compute measurements with analytical alpha-beta models across PCIe 3.0 → NVLin
 | Hardware | NVIDIA RTX 2070 (compute measurement) |
 
 **Key findings:**
-- PCIe 3.0 at 8 GPUs: **19.6% TP efficiency** (80% wasted on communication)
-- NVLink v4 at 8 GPUs: **94.9% TP efficiency** for LLaMA-70B
-- Pipeline parallelism has **46.7% bubble** at 8 stages
-- Larger models scale dramatically better: GPT-2 at 53.7% vs LLaMA-70B at 94.9%
-- LLaMA-70B requires minimum 2× 80GB GPUs for VRAM
+- PCIe 3.0 at 8 GPUs: **19.6% TP efficiency** — communication dominated (ratio=0.29)
+- NVLink v3 at 8 GPUs: **68.0% TP efficiency** for LLaMA-7B, **87.8%** for Falcon-180B
+- Pipeline parallelism wastes **46.7% of GPU time** in bubble at 8 stages — 4–6× slower than TP
+- LLaMA-70B crosses compute/comm boundary at PCIe 4.0 (ratio=1.66) — on PCIe 3.0 it falls to 0.80
+- LLaMA-13B achieves **96.9% efficiency** at TP=2 on NVLink v3 — near-perfect linear speedup
+- PCIe 2-GPU TP costs **$0.092/1M tokens** — cheapest option for LLaMA-7B serving
+- Alpha-beta model validated empirically: R²=0.9996, Gloo adds **54× latency overhead** vs hardware
 
 ---
 
@@ -519,14 +521,25 @@ tail perplexity and output distribution.
       "what to run"      "what to reuse"    "how to manage RAM"
 
     +----------------------------------------------------------+
-    |          Analysis & Visualization (across all)            |
+    |          Hardware & Scaling Layer                        |
+    +------------------+-------------------+------------------+
+    |  Parallelism     |  Context Length   |  Attention       |
+    |                  |                   |                  |
+    |  comm-cost-      |  long-context-    |  flash-attention |
+    |  modeling        |  benchmark        |  -benchmark      |
+    +------------------+-------------------+------------------+
+      "how to scale"     "how far to push"  "which kernel"
+
+    +----------------------------------------------------------+
+    |          Analysis & Visualization (across all)           |
     |                                                          |
     |  inference-dashboard  +  attention-sink-profiler         |
     |  (interactive plots)     (attention mechanics)           |
     +----------------------------------------------------------+
 
 Each project is independent and fully reproducible.
-Together they cover the full lifecycle of a request in an LLM server.
+Together they cover the full lifecycle of a request in an LLM server:
+from scheduling and caching to parallelism modeling and hardware limits.
 
 ---
 
@@ -536,9 +549,10 @@ Together they cover the full lifecycle of a request in an LLM server.
 |---|---|
 | Core simulation | C++20, STL, CMake, Ninja |
 | Deep learning | PyTorch, Transformers, CUDA |
+| Distributed modeling | Alpha-beta comm model, TP/PP/Hybrid simulation, regime detection |
 | Analysis & plots | Python, pandas, numpy, matplotlib, Plotly |
 | Dashboard | Streamlit, Plotly |
-| Research output | LaTeX tables, Pareto frontier, regime classification |
+| Research output | Pareto frontier, regime classification, cost efficiency, P99 tail latency |
 | Environment | WSL, VS Code, GCC 15, Python 3.14 |
 
 ---
