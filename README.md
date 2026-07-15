@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 24 projects covering the full LLM inference stack —
+> 25 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -129,6 +129,30 @@ compute measurements with analytical alpha-beta models across PCIe 3.0 → NVLin
 - LLaMA-13B achieves **96.9% efficiency** at TP=2 on NVLink v3 — near-perfect linear speedup
 - PCIe 2-GPU TP costs **$0.092/1M tokens** — cheapest option for LLaMA-7B serving
 - Alpha-beta model validated empirically: R²=0.9996, Gloo adds **54× latency overhead** vs hardware
+
+---
+
+### 📄 [paged-attention-sim](https://github.com/JohnScheuer/paged-attention-sim)
+
+> *How does vLLM eliminate memory fragmentation?*
+
+Discrete-event simulator of the PagedAttention memory management system
+(Kwon et al., SOSP 2023). Implements physical block manager, logical block
+tables, copy-on-write prefix cache, and two schedulers from scratch.
+Validates all five core claims of the vLLM paper with measurable results.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · fragmentation analysis · block size sweep · prefix sharing |
+
+**Key findings:**
+- Contiguous allocation wastes **60.8% of KV cache memory** — confirmed vLLM paper claim
+- PagedAttention delivers **+154.9% effective capacity** with 0% external fragmentation
+- Prefix sharing (CoW): **+76% throughput** at 100% sharing ratio — 76 extra sequences served
+- Block size tradeoff: optimal=8 tokens, vLLM uses 16 (score diff=0.015) for CUDA alignment
+- Memory budget gain: **+287% throughput** from 4K to 64K token budget
+- All 5 vLLM paper claims reproduced and quantified ✓
 
 ---
 
