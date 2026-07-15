@@ -107,6 +107,28 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 
 ---
 
+### 📡 [comm-cost-modeling](https://github.com/JohnScheuer/comm-cost-modeling)
+
+> *Where does tensor parallelism stop scaling?*
+
+Communication cost modeling with TP vs PP vs hybrid parallelism, combining real GPU
+compute measurements with analytical alpha-beta models across PCIe 3.0 → NVLink v4.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch |
+| Method | Compute instrumentation · alpha-beta model · scaling simulation · regime detection |
+| Hardware | NVIDIA RTX 2070 (compute measurement) |
+
+**Key findings:**
+- PCIe 3.0 at 8 GPUs: **19.6% TP efficiency** (80% wasted on communication)
+- NVLink v4 at 8 GPUs: **94.9% TP efficiency** for LLaMA-70B
+- Pipeline parallelism has **46.7% bubble** at 8 stages
+- Larger models scale dramatically better: GPT-2 at 53.7% vs LLaMA-70B at 94.9%
+- LLaMA-70B requires minimum 2× 80GB GPUs for VRAM
+
+---
+
 ### 🏗️ [inference-pipeline-e2e](https://github.com/JohnScheuer/inference-pipeline-e2e)
 
 > *The capstone: a complete LLM serving pipeline with streaming and per-phase metrics.*
