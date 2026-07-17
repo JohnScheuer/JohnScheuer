@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 26 projects covering the full LLM inference stack —
+> 27 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -176,6 +176,30 @@ with perplexity, memory, and latency measurement across sequence lengths and lay
 - Quantization error concentrates in **later layers** — early layers tolerate INT4 with near-zero impact
 - Mixed-precision policy (INT4 early, INT8 late) could recover most of 75% reduction at INT8 quality
 - On CPU, quantization value is **capacity, not speed** — identical conclusion to weight quantization
+
+---
+
+### 🔀 [disaggregated-prefill-decode-sim](https://github.com/JohnScheuer/disaggregated-prefill-decode-sim)
+
+> *What if prefill and decode ran on separate nodes?*
+
+Discrete-event simulator comparing coupled vs. disaggregated LLM serving across
+540 configurations — 3 models, 4 interconnects, 5 arrival rates, 3 prompt lengths,
+3 output lengths. Models prefill micro-batching, decode contention, GQA-aware KV
+cache sizing, transfer overlap, GPU memory limits, and drop behavior under saturation.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · Poisson arrivals · Pareto frontier · saturation analysis |
+
+**Key findings:**
+- Mean throughput gain: **10.76x** — median **8.26x**, max **32.37x**
+- Mean TTFT speedup: **312.62x** — median **173.73x**, max **1428.11x**
+- Mean transfer overhead: **0.16% of E2E latency** — transfer cost is negligible
+- Mean transfer latency: **3.96 ms** — PCIe 3.0 already sufficient in most regimes
+- Gains driven by **eliminating queueing**, not by bandwidth — 70B benefits most
+- Coupled baseline collapses under load: long decode blocks all subsequent prefills
 
 ---
 
@@ -586,14 +610,14 @@ tail perplexity and output distribution.
 
     +----------------------------------------------------------+
     |          LLM Inference Server (simulated)                |
-    +--------+------------+------------+--------+------------+
-    |Scheduler|Prefix Cache|KV Compact. |Paged   |KV Quant.  |
-    |        |            |            |Mem     |           |
-    |llm-    | prefix-    | kv-cache-  |paged-  |kv-cache-  |
-    |infer   | cache-sim  | compact-lab|attn-sim|quant-bench|
-    +--------+------------+------------+--------+------------+
-     "what    "what to     "how to      "how to  "how to
-      to run"  reuse"       defrag"      allocate" compress"
+    +--------+----------+----------+-------+--------+--------+
+    |Scheduler|Prefix   |KV        |Paged  |KV      |Disagg. |
+    |        |Cache     |Compact.  |Mem    |Quant.  |Serving |
+    |llm-    |prefix-   |kv-cache- |paged- |kv-cache|disagg- |
+    |infer   |cache-sim |compact   |attn   |quant   |prefill |
+    +--------+----------+----------+-------+--------+--------+
+     "what    "what to   "how to    "how to "how to  "split
+      to run"  reuse"     defrag"    alloc"  compress" phases"
 
     +----------------------------------------------------------+
     |          Hardware & Scaling Layer                        |
@@ -624,8 +648,8 @@ tail perplexity and output distribution.
 
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
-from scheduling and caching to memory allocation and compression,
-parallelism modeling, hardware limits, and decoding optimization.
+from scheduling and caching to memory allocation, compression, and
+disaggregated serving, parallelism modeling, hardware limits, and decoding optimization.
 
 ---
 
