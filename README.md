@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 25 projects covering the full LLM inference stack —
+> 26 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -153,6 +153,29 @@ Validates all five core claims of the vLLM paper with measurable results.
 - Block size tradeoff: optimal=8 tokens, vLLM uses 16 (score diff=0.015) for CUDA alignment
 - Memory budget gain: **+287% throughput** from 4K to 64K token budget
 - All 5 vLLM paper claims reproduced and quantified ✓
+
+---
+
+### 🗜️ [kv-cache-quantization-bench](https://github.com/JohnScheuer/kv-cache-quantization-bench)
+
+> *How much KV cache memory can you recover without discarding tokens?*
+
+Benchmark of five KV cache quantization schemes (FP16, INT8-sym, INT8-per-token,
+INT4-per-token, FP8-e4m3) applied via runtime hooks on GPT-2 and GPT-2-medium,
+with perplexity, memory, and latency measurement across sequence lengths and layers.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers · Pandas · Matplotlib |
+| Method | DynamicCache hooks · prefix-continuation split · per-layer sensitivity · Pareto frontier |
+| Hardware | CPU (WSL) |
+
+**Key findings:**
+- INT8-per-token delivers **50% memory reduction** with ppl_delta < 0.04 — effectively free compression
+- INT4-per-token achieves **75% reduction** at bounded quality cost (+0.12 to +0.15 ppl_delta over INT8)
+- Quantization error concentrates in **later layers** — early layers tolerate INT4 with near-zero impact
+- Mixed-precision policy (INT4 early, INT8 late) could recover most of 75% reduction at INT8 quality
+- On CPU, quantization value is **capacity, not speed** — identical conclusion to weight quantization
 
 ---
 
@@ -563,14 +586,14 @@ tail perplexity and output distribution.
 
     +----------------------------------------------------------+
     |          LLM Inference Server (simulated)                |
-    +------------+-------------+-------------+----------------+
-    |  Scheduler |Prefix Cache | KV Compact. |   Paged Mem    |
-    |            |             |             |                |
-    | llm-infer  | prefix-     | kv-cache-   | paged-         |
-    | -scheduler | cache-sim   | compact-lab | attention-sim  |
-    +------------+-------------+-------------+----------------+
-     "what to run" "what to     "how to       "how to
-                    reuse"       defragment"   allocate"
+    +--------+------------+------------+--------+------------+
+    |Scheduler|Prefix Cache|KV Compact. |Paged   |KV Quant.  |
+    |        |            |            |Mem     |           |
+    |llm-    | prefix-    | kv-cache-  |paged-  |kv-cache-  |
+    |infer   | cache-sim  | compact-lab|attn-sim|quant-bench|
+    +--------+------------+------------+--------+------------+
+     "what    "what to     "how to      "how to  "how to
+      to run"  reuse"       defrag"      allocate" compress"
 
     +----------------------------------------------------------+
     |          Hardware & Scaling Layer                        |
@@ -601,8 +624,8 @@ tail perplexity and output distribution.
 
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
-from scheduling and caching to memory allocation, parallelism modeling,
-hardware limits, and decoding optimization.
+from scheduling and caching to memory allocation and compression,
+parallelism modeling, hardware limits, and decoding optimization.
 
 ---
 
