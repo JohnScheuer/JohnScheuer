@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 27 projects covering the full LLM inference stack —
+> 28 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -200,6 +200,31 @@ cache sizing, transfer overlap, GPU memory limits, and drop behavior under satur
 - Mean transfer latency: **3.96 ms** — PCIe 3.0 already sufficient in most regimes
 - Gains driven by **eliminating queueing**, not by bandwidth — 70B benefits most
 - Coupled baseline collapses under load: long decode blocks all subsequent prefills
+
+---
+
+### ⚡ [cuda-graph-decode-profiler](https://github.com/JohnScheuer/cuda-graph-decode-profiler)
+
+> *How much decode latency comes from kernel launch overhead — and what eliminates it?*
+
+Profiler comparing four decode execution modes (eager dynamic, eager static,
+torch.compile, CUDA Graph) on GPT-2 and GPT-2-medium on RTX 2070. Measures
+per-token latency, speedup vs baseline, batch-size crossover, and sequence-length
+sensitivity to isolate kernel launch and runtime dispatch overhead.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers · CUDA 13.0 |
+| Method | Per-token timing · warmup · CUDA Graph capture · torch.compile · StaticCache |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- torch.compile: **3.31x** mean speedup (GPT-2), **2.65x** (GPT-2-medium) over eager dynamic
+- CUDA Graph: **2.53x** mean speedup (GPT-2), **2.18x** (GPT-2-medium) over eager dynamic
+- On RTX 2070 + PyTorch 2.13, **torch.compile outperforms CUDA Graph alone**
+- StaticCache is **slower** than DynamicCache in eager mode — speedup only materializes with graph capture
+- Graph benefit is largest at **small batch sizes** — shrinks as compute dominates launch overhead
+- Production systems (vLLM, TensorRT-LLM, SGLang) use compile + graph together — neither alone is sufficient
 
 ---
 
@@ -621,13 +646,14 @@ tail perplexity and output distribution.
 
     +----------------------------------------------------------+
     |          Hardware & Scaling Layer                        |
-    +------------------+-------------------+------------------+
-    |  Parallelism     |  Context Length   |  Attention       |
-    |                  |                   |                  |
-    |  comm-cost-      |  long-context-    |  flash-attention |
-    |  modeling        |  benchmark        |  -benchmark      |
-    +------------------+-------------------+------------------+
-      "how to scale"     "how far to push"  "which kernel"
+    +-------------+---------------+----------+---------------+
+    |  Parallelism |  Context Len  | Attention| Kernel Launch |
+    |              |               |          |               |
+    |  comm-cost-  |  long-context-| flash-   | cuda-graph-   |
+    |  modeling    |  benchmark    | attention | decode-prof   |
+    +-------------+---------------+----------+---------------+
+      "how to scale" "how far to    "which     "eliminate
+                      push"          kernel"    overhead"
 
     +----------------------------------------------------------+
     |          Decoding & Generation Layer                     |
@@ -649,7 +675,8 @@ tail perplexity and output distribution.
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, and
-disaggregated serving, parallelism modeling, hardware limits, and decoding optimization.
+disaggregated serving, parallelism modeling, kernel-level execution optimization,
+hardware limits, and decoding optimization.
 
 ---
 
