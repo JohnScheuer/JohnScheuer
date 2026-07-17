@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 28 projects covering the full LLM inference stack —
+> 29 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -225,6 +225,31 @@ sensitivity to isolate kernel launch and runtime dispatch overhead.
 - StaticCache is **slower** than DynamicCache in eager mode — speedup only materializes with graph capture
 - Graph benefit is largest at **small batch sizes** — shrinks as compute dominates launch overhead
 - Production systems (vLLM, TensorRT-LLM, SGLang) use compile + graph together — neither alone is sufficient
+
+---
+
+### 🌳 [tree-speculative-decoding](https://github.com/JohnScheuer/tree-speculative-decoding)
+
+> *Given the same verification budget, does a tree accept more tokens than a linear chain?*
+
+From-scratch implementation and benchmark of tree-based speculative decoding
+(SpecInfer-style) vs. linear speculative decoding under a fair equal-node-budget
+comparison. Implements custom tree attention masks, best-first tree expansion,
+and a full sweep over branch factor, depth, budget, and draft quality.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch |
+| Method | Tree attention mask · equal-budget sweep · node efficiency analysis |
+
+**Key findings:**
+- Mean accepted tokens per target call: tree **0.317** vs linear **0.120**
+- Mean tree vs linear speedup: **6.97x** — median **4.16x**, max at bf=8: **13.47x**
+- Mean node efficiency ratio: **5.81x** — tree extracts 5.8x more accepted tokens per verified node
+- **Branch factor dominates** under fixed budget — wider+shallower consistently beats narrow+deep
+- Depth shows **diminishing returns** — budget better spent on breadth than depth
+- At draft quality=0.9, tree and linear **converge** — tree solves a specific failure mode, not a general one
+- Tree advantage largest when draft is unreliable: quality=0.3 → **14.22x speedup**
 
 ---
 
@@ -657,13 +682,14 @@ tail perplexity and output distribution.
 
     +----------------------------------------------------------+
     |          Decoding & Generation Layer                     |
-    +------------------+-------------------+------------------+
-    |  Speculative     |  Quantization     |  Long Context    |
-    |                  |                   |                  |
-    |  speculative-    |  quantization-    |  long-context-   |
-    |  decoding-real   |  profiler         |  benchmark       |
-    +------------------+-------------------+------------------+
-      "when it helps"    "precision vs speed" "how far to push"
+    +--------------+-------------+-------------+-------------+
+    |  Speculative |  Tree Spec. |  Quantiz.   |  Long Ctx   |
+    |  (linear)    |  (tree)     |             |             |
+    |  speculative-| tree-spec-  | quantiz-    | long-ctx-   |
+    |  decoding    | decoding    | profiler    | benchmark   |
+    +--------------+-------------+-------------+-------------+
+      "when it       "more tokens  "precision    "how far
+       helps"         per step"     vs speed"     to push"
 
     +----------------------------------------------------------+
     |          Analysis & Visualization (across all)           |
@@ -676,7 +702,8 @@ Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, and
 disaggregated serving, parallelism modeling, kernel-level execution optimization,
-hardware limits, and decoding optimization.
+hardware limits, and decoding optimization — including linear and tree-based
+speculative decoding.
 
 ---
 
