@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 29 projects covering the full LLM inference stack —
+> 30 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -529,6 +529,31 @@ sliding windows, sink-preserving windows, random eviction, and attention-based e
 
 ---
 
+### 🧭 [guided-decoding-bench](https://github.com/JohnScheuer/guided-decoding-bench)
+
+> *How much does enforcing JSON/schema cost per decode token?*
+
+Benchmark isolating the per-token overhead of constrained decoding for structured
+output generation. Compares free decoding, token healing, and FSM guided decoding
+across schema types, string lengths, and oracle confidence levels. Breaks down FSM
+step cost into model logits, mask build, mask apply, and state update components.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch |
+| Method | Per-token timing · FSM component breakdown · valid JSON rate · cold vs warm build |
+
+**Key findings:**
+- Token healing: **0.99x** overhead — effectively free, but cannot enforce online validity
+- FSM guided decoding: **1.96x** per-token slowdown — consistent across all configurations
+- Mask build + mask apply = **84.2%** of FSM step time — grammar state update = **0.2%**
+- Overhead is **structural, not model-dependent** — changing confidence does not change slowdown
+- Valid JSON rate: free **93.3%**, healing **92.9%**, FSM **78.4%** — syntactic constraint ≠ semantic validity
+- Cold FSM build: **33.0 ms** — warm build: **22.0 ms** — warm cost is the operationally relevant number
+- Optimization target for guided decoding serving: **mask construction**, not grammar or model
+
+---
+
 ### ⚡ [speculative-decoding-impl](https://github.com/JohnScheuer/speculative-decoding-impl)
 
 > *Does speculative decoding actually speed up inference on consumer GPUs?*
@@ -682,14 +707,14 @@ tail perplexity and output distribution.
 
     +----------------------------------------------------------+
     |          Decoding & Generation Layer                     |
-    +--------------+-------------+-------------+-------------+
-    |  Speculative |  Tree Spec. |  Quantiz.   |  Long Ctx   |
-    |  (linear)    |  (tree)     |             |             |
-    |  speculative-| tree-spec-  | quantiz-    | long-ctx-   |
-    |  decoding    | decoding    | profiler    | benchmark   |
-    +--------------+-------------+-------------+-------------+
-      "when it       "more tokens  "precision    "how far
-       helps"         per step"     vs speed"     to push"
+    +----------+----------+----------+----------+------------+
+    |Speculative|Tree Spec.|Quantiz.  |Long Ctx  |Guided      |
+    |(linear)  |(tree)    |          |          |Decoding    |
+    |specul-   |tree-spec-|quantiz-  |long-ctx- |guided-     |
+    |decoding  |decoding  |profiler  |benchmark |decode-bench|
+    +----------+----------+----------+----------+------------+
+      "when it   "more      "precision "how far   "constraint
+       helps"     per step"  vs speed"  to push"   cost"
 
     +----------------------------------------------------------+
     |          Analysis & Visualization (across all)           |
@@ -703,7 +728,7 @@ Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, and
 disaggregated serving, parallelism modeling, kernel-level execution optimization,
 hardware limits, and decoding optimization — including linear and tree-based
-speculative decoding.
+speculative decoding and constrained structured output generation.
 
 ---
 
