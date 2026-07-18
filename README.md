@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 30 projects covering the full LLM inference stack —
+> 31 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -318,6 +318,31 @@ with FP16 vs INT4 comparison.
 - **40× speedup** at 8K vs vanilla attention
 - INT4 **OOMs at 32K** — KV-cache is the real bottleneck, not model weights
 - Quantization is NOT a long-context solution
+
+---
+
+### 🔌 [multi-lora-serving-sim](https://github.com/JohnScheuer/multi-lora-serving-sim)
+
+> *How do you serve 50 LoRA adapters simultaneously without exhausting VRAM?*
+
+Discrete-event simulator comparing three multi-LoRA scheduling strategies
+(naive swap, hot-set preloading, batch-by-adapter) under variable VRAM pressure,
+arrival rates, and adapter popularity distributions. Models CPU-to-GPU swap cost,
+adapter cache eviction, and batch window effects.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · Poisson arrivals · Zipf distribution · VRAM pressure sweep |
+
+**Key findings:**
+- Swap overhead = **29.3% of TTFT** in naive serving at high VRAM pressure
+- Batch-swap reduces TTFT by **20%** and swap rate by **64%** vs naive at 64 req/s
+- Hot-set wins only at **low arrival rates** with skewed distributions (Zipf, arr=4)
+- Strategy crossover at **~10–16 req/s** — below: preloading wins; above: batching wins
+- TTFT is **output-length invariant** — swap happens before first token regardless of decode length
+- Batch window has **diminishing returns beyond 25ms** — gain comes from density, not window width
+- Naive swap never dominates both alternatives simultaneously across any high-pressure scenario
 
 ---
 
@@ -683,16 +708,16 @@ tail perplexity and output distribution.
 
 ## How They Fit Together
 
-    +----------------------------------------------------------+
-    |          LLM Inference Server (simulated)                |
-    +--------+----------+----------+-------+--------+--------+
-    |Scheduler|Prefix   |KV        |Paged  |KV      |Disagg. |
-    |        |Cache     |Compact.  |Mem    |Quant.  |Serving |
-    |llm-    |prefix-   |kv-cache- |paged- |kv-cache|disagg- |
-    |infer   |cache-sim |compact   |attn   |quant   |prefill |
-    +--------+----------+----------+-------+--------+--------+
-     "what    "what to   "how to    "how to "how to  "split
-      to run"  reuse"     defrag"    alloc"  compress" phases"
+    +---------------------------------------------------------------+
+    |            LLM Inference Server (simulated)                   |
+    +-------+--------+----------+-------+--------+-------+---------+
+    |Schedul|Prefix  |KV        |Paged  |KV      |Disagg.|Multi    |
+    |er     |Cache   |Compact.  |Mem    |Quant.  |Serving|LoRA     |
+    |llm-   |prefix- |kv-cache- |paged- |kv-cache|disagg-|multi-   |
+    |infer  |cache   |compact   |attn   |quant   |prefill|lora-sim |
+    +-------+--------+----------+-------+--------+-------+---------+
+     "what   "what    "how to    "how to "how to  "split  "adapter
+      to run" to reuse" defrag"   alloc"  compress" phases" scheduling"
 
     +----------------------------------------------------------+
     |          Hardware & Scaling Layer                        |
@@ -725,10 +750,10 @@ tail perplexity and output distribution.
 
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
-from scheduling and caching to memory allocation, compression, and
-disaggregated serving, parallelism modeling, kernel-level execution optimization,
-hardware limits, and decoding optimization — including linear and tree-based
-speculative decoding and constrained structured output generation.
+from scheduling and caching to memory allocation, compression, multi-adapter
+serving, and disaggregated execution, parallelism modeling, kernel-level execution
+optimization, hardware limits, and decoding optimization — including linear and
+tree-based speculative decoding and constrained structured output generation.
 
 ---
 
