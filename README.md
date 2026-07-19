@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 37 projects covering the full LLM inference stack —
+> 38 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -351,6 +351,31 @@ wall-clock speedup, per-phase time breakdown, and validates the Leviathan et al.
 - gamma=8 has **highest alpha (0.750)** but lowest speedup — draft "in flow" effect
 - Analytical model correctly predicted failure: **zero false positives**
 - At cost_ratio=4.0 (7B target): simulated mean speedup **1.24x** — viable with right hardware
+
+---
+
+### 📊 [sharegpt-workload-bench](https://github.com/JohnScheuer/sharegpt-workload-bench)
+
+> *How does serving behavior change under real conversation traces vs synthetic Poisson workloads?*
+
+Benchmark replaying 9562 real ShareGPT conversation turns through a discrete-event
+serving simulator, comparing TTFT, SLO compliance, and scheduling policy effectiveness
+against mean-matched and median-matched Poisson workloads. Validates workload
+assumptions used across the portfolio.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Trace replay · Poisson comparison · scheduling policy sweep · SLO crossover analysis |
+
+**Key findings:**
+- Real prompt distribution: median=22, p99=1872 — **85x difference** — no synthetic param captures this
+- ShareGPT P99 TTFT at low load: **212ms** vs 22ms (mean-matched) vs 5ms (median-matched)
+- ShareGPT is **9.6x worse** than mean-matched Poisson — **42x worse** than median-matched
+- SLO violations appear **one arrival-rate step earlier** under real traces vs synthetic
+- Under Poisson: all scheduling policies **identical** — under ShareGPT: shortest-first **-29% SLO violations**
+- All prior portfolio simulation results are **conservative estimates** of real-traffic behavior
+- Synthetic benchmarks make scheduling look irrelevant — real distributions reveal the difference
 
 ---
 
@@ -903,11 +928,11 @@ Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, multi-adapter
 serving, disaggregated execution, multi-instance request routing, SLO-aware
-autoscaling, and cold start profiling, parallelism modeling, kernel-level execution
-optimization including prefill and decode attention kernels, hardware limits,
-long-context extension via RoPE scaling, and decoding optimization — including
-linear and tree-based speculative decoding, constrained structured output
-generation, and sampling strategy benchmarking.
+autoscaling, cold start profiling, and real-trace workload validation, parallelism
+modeling, kernel-level execution optimization including prefill and decode attention
+kernels, hardware limits, long-context extension via RoPE scaling, and decoding
+optimization — including linear and tree-based speculative decoding, constrained
+structured output generation, and sampling strategy benchmarking.
 
 ---
 
