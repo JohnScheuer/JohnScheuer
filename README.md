@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 34 projects covering the full LLM inference stack —
+> 35 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -67,6 +67,32 @@ A RadixTree-based prefix cache simulator with four eviction policies:
 - LFU dominates in small caches with skewed (Zipf) workloads
 - Multi-turn sessions push hit rate to 60%+
 - SizeLRU degrades with high alpha — blocks eviction of large nodes
+
+---
+
+### 🧊 [model-cold-start-bench](https://github.com/JohnScheuer/model-cold-start-bench)
+
+> *Where does startup delay actually come from — and what eliminates it?*
+
+Benchmark measuring each phase of LLM instance cold start separately (weight
+loading, PCIe transfer, CUDA init, KV cache allocation, warmup forward pass)
+on RTX 2070. Closes the loop with slo-aware-autoscaling-sim by grounding
+startup_delay parameters in real measurements.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Per-phase timing · pre-warming savings · model size extrapolation |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) · PCIe ~3.1 GB/s effective |
+
+**Key findings:**
+- Weight loading from disk = **74–78%** of cold start — storage, not compute, is the bottleneck
+- PCIe transfer is **fastest-growing phase** with model size — 36% at 774M, major fraction at 7B+
+- CUDA init + KV alloc + JIT = **under 10% combined** — not the bottleneck
+- Pre-warming weights on GPU eliminates **92–98%** of cold start (551–1337ms → 15–45ms)
+- Cold start multiplier: **68x** warmed TTFT for GPT-2 — 400x+ at 7B scale
+- Extrapolated cold start: 7B=**~20s**, 13B=**~37s**, 70B=**~200s** without warm pool
+- Autoscaling startup delays now grounded: 5s=GPU warm, 15s=CPU RAM, 30s=7B disk, 60s=13B disk
 
 ---
 
@@ -825,10 +851,11 @@ tail perplexity and output distribution.
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, multi-adapter
-serving, disaggregated execution, multi-instance request routing, and SLO-aware
-autoscaling, parallelism modeling, kernel-level execution optimization, hardware
-limits, and decoding optimization — including linear and tree-based speculative
-decoding, constrained structured output generation, and sampling strategy benchmarking.
+serving, disaggregated execution, multi-instance request routing, SLO-aware
+autoscaling, and cold start profiling, parallelism modeling, kernel-level execution
+optimization, hardware limits, and decoding optimization — including linear and
+tree-based speculative decoding, constrained structured output generation, and
+sampling strategy benchmarking.
 
 ---
 
