@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 38 projects covering the full LLM inference stack —
+> 39 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -142,6 +142,31 @@ optimal routing policy under realistic serving conditions.
 - prefix_aware at high skew: imbalance=**0.856** — traffic concentrates, TTFT collapses to **280.3ms**
 - Round-robin and least-load are **equivalent** under homogeneous instances — routing intelligence only pays with skewed workloads
 - Cache locality and load balance are **not fundamentally in conflict** — a single queue-depth threshold resolves both
+
+---
+
+### 🧠 [kv-cache-aware-scheduler](https://github.com/JohnScheuer/kv-cache-aware-scheduler)
+
+> *What happens when the scheduler uses KV cache pressure as a signal, not just queue depth?*
+
+Simulator comparing three KV-cache-aware scheduling policies (greedy, admission
+control, memory-first) under uniform, heavy-tail, and mixed workloads. Measures
+raw vs effective throughput, preemption rate, rejection rate, and P99 TTFT to
+find the Pareto-dominant policy under memory pressure.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · KV budget tracking · effective throughput analysis |
+
+**Key findings:**
+- Greedy raw throughput: **8.41** vs memory-first **6.06** — greedy looks 39% faster
+- Greedy effective throughput: **3.46** vs memory-first **6.06** — greedy is **43% worse**
+- Greedy wastes **59% of GPU compute** on preemptions under mixed workloads
+- memory-first **Pareto-dominates**: lower rejection than admission_control, lower tail than greedy, zero preemptions
+- Effective throughput is the **correct metric** under KV pressure — raw throughput is misleading
+- Controlled rejection wastes **zero compute** — preemption wastes **all compute** done before eviction
+- KV-aware scheduling only differentiates under **heterogeneous workloads** — uniform workloads converge
 
 ---
 
@@ -926,13 +951,14 @@ tail perplexity and output distribution.
 
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
-from scheduling and caching to memory allocation, compression, multi-adapter
-serving, disaggregated execution, multi-instance request routing, SLO-aware
-autoscaling, cold start profiling, and real-trace workload validation, parallelism
-modeling, kernel-level execution optimization including prefill and decode attention
-kernels, hardware limits, long-context extension via RoPE scaling, and decoding
-optimization — including linear and tree-based speculative decoding, constrained
-structured output generation, and sampling strategy benchmarking.
+from scheduling and caching to memory allocation, compression, KV-cache-aware
+scheduling, multi-adapter serving, disaggregated execution, multi-instance request
+routing, SLO-aware autoscaling, cold start profiling, and real-trace workload
+validation, parallelism modeling, kernel-level execution optimization including
+prefill and decode attention kernels, hardware limits, long-context extension via
+RoPE scaling, and decoding optimization — including linear and tree-based
+speculative decoding, constrained structured output generation, and sampling
+strategy benchmarking.
 
 ---
 
