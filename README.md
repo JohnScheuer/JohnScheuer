@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 35 projects covering the full LLM inference stack —
+> 36 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -482,6 +482,32 @@ concurrency analysis, serving simulation, and RPS capacity planning.
 
 ---
 
+### ⚡ [flash-decoding-bench](https://github.com/JohnScheuer/flash-decoding-bench)
+
+> *Flash Decoding vs SDPA at decode time — when does KV-parallelism pay off?*
+
+Benchmark comparing standard SDPA against Flash-Decoding-style chunked attention
+(sequential and parallel CUDA streams) at the decode step (q_len=1). Measures
+crossover point, chunk size sensitivity, and batch size effect. Closes a pair
+with flash-attention-benchmark — prefill vs decode attention regimes.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · CUDA |
+| Method | Per-kernel timing · KV length sweep · chunk size sweep · stream parallelism |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- SDPA wins at **short KV lengths** — fused kernel dominates, chunk overhead not justified
+- Parallel chunked decode wins above **~8K KV tokens** — 1.38x speedup vs SDPA at kv=8192, bs=1
+- Sequential chunked only reaches **1.13x at kv=16384** — Python loop overhead limits gains
+- Batch size 4 shows **no benefit** from chunked decode — SDPA already utilizes GPU well
+- Measured gains are a **lower bound** — fused CUDA kernel moves crossover to shorter KV
+- Flash Decoding is a **kernel engineering problem**, not just an algorithmic idea
+- Production crossover (FlashInfer, vLLM, SGLang): **kv~1024** vs Python impl **kv~8192**
+
+---
+
 ### ⚡ [flash-attention-benchmark](https://github.com/JohnScheuer/flash-attention-benchmark)
 
 > *What attention optimization works on consumer Turing GPUs?*
@@ -819,16 +845,16 @@ tail perplexity and output distribution.
      "what   "what    "how to  "how to "how to  "split  "adapter "which    "how many
       to run" to reuse" defrag"  alloc"  compress" phases" sched"  instance" instances"
 
-    +----------------------------------------------------------+
-    |          Hardware & Scaling Layer                        |
-    +-------------+---------------+----------+---------------+
-    |  Parallelism |  Context Len  | Attention| Kernel Launch |
-    |              |               |          |               |
-    |  comm-cost-  |  long-context-| flash-   | cuda-graph-   |
-    |  modeling    |  benchmark    | attention | decode-prof   |
-    +-------------+---------------+----------+---------------+
-      "how to scale" "how far to    "which     "eliminate
-                      push"          kernel"    overhead"
+    +------------------------------------------------------------------+
+    |          Hardware & Scaling Layer                                |
+    +----------+----------+----------+----------+-------------------+
+    |Parallelism|Context   |Attention |Kernel    |Decode Attention   |
+    |           |Length    |(prefill) |Launch    |(decode)           |
+    |comm-cost- |long-ctx- |flash-    |cuda-graph|flash-decoding-    |
+    |modeling   |benchmark |attention |decode-prof|bench             |
+    +----------+----------+----------+----------+-------------------+
+      "how to    "how far   "which     "eliminate  "KV-parallel
+       scale"     to push"   kernel"    overhead"   decode"
 
     +------------------------------------------------------------------+
     |          Decoding & Generation Layer                             |
@@ -853,9 +879,9 @@ Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, multi-adapter
 serving, disaggregated execution, multi-instance request routing, SLO-aware
 autoscaling, and cold start profiling, parallelism modeling, kernel-level execution
-optimization, hardware limits, and decoding optimization — including linear and
-tree-based speculative decoding, constrained structured output generation, and
-sampling strategy benchmarking.
+optimization including prefill and decode attention kernels, hardware limits, and
+decoding optimization — including linear and tree-based speculative decoding,
+constrained structured output generation, and sampling strategy benchmarking.
 
 ---
 
