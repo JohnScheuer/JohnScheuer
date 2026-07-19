@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 42 projects covering the full LLM inference stack —
+> 43 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -48,6 +48,31 @@ A discrete-tick simulator comparing three compaction policies:
 - ThresholdCompaction dominates GreedyCompaction across the entire Pareto frontier
 - 11 "free compaction" configurations — zero observable latency impact
 - Optimal point: τ=0.473, κ=128 → 2 events in 120s, ΔP95 = 0.00ms
+
+---
+
+### 💬 [multi-turn-kv-reuse-bench](https://github.com/JohnScheuer/multi-turn-kv-reuse-bench)
+
+> *How does KV cache reuse evolve across turns — and which routing strategy captures it?*
+
+Simulation measuring KV cache reuse evolution across conversation turns under five
+routing strategies (random, least_load, sticky_session, hybrid_sticky, cost_aware)
+using real ShareGPT conversation traces. Quantifies the compound cost of routing
+misses and the tradeoff between cache locality and load balance.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib · ShareGPT V3 |
+| Method | Turn-level simulation · per-turn reuse tracking · Pareto frontier · cost-aware sweep |
+
+**Key findings:**
+- Sticky reaches **0.875 reuse by turn 1** — least-load reaches only 0.620 by turn 7
+- hybrid_5000ms: best mean TTFT (**4602ms**) — retains 70% of sticky hit rate at 14% better latency
+- cost_aware_a0.25: best p99 TTFT (**15987ms**) — per-request tradeoff beats fixed policies on tail
+- Sticky: 0.771 hit rate but **p99 33% worse** than least-load — queue concentration negates cache benefit
+- Routing misses **compound over turns** — a miss at turn 2 permanently destroys accumulated locality
+- Routing is a **multi-objective problem** — no single strategy dominates all metrics simultaneously
+- Reuse benefit is **front-loaded**: largest relative gain at turn 1, diminishing returns beyond turn 5
 
 ---
 
@@ -1029,12 +1054,12 @@ Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, KV-cache-aware
 scheduling with output length prediction, chunked prefill under memory pressure,
-multi-adapter serving, disaggregated execution, multi-instance request routing,
-SLO-aware autoscaling, cold start profiling, and real-trace workload validation,
-parallelism modeling, kernel-level execution optimization including prefill and
-decode attention kernels, hardware limits, long-context extension via RoPE scaling,
-and decoding optimization — including linear, tree-based, and batched speculative
-decoding, constrained structured output generation, and sampling strategy
+multi-turn KV reuse, multi-adapter serving, disaggregated execution, multi-instance
+request routing, SLO-aware autoscaling, cold start profiling, and real-trace workload
+validation, parallelism modeling, kernel-level execution optimization including
+prefill and decode attention kernels, hardware limits, long-context extension via
+RoPE scaling, and decoding optimization — including linear, tree-based, and batched
+speculative decoding, constrained structured output generation, and sampling strategy
 benchmarking.
 
 ---
