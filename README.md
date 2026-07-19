@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 31 projects covering the full LLM inference stack —
+> 32 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -600,6 +600,31 @@ Compares GPT-2 → GPT-2-medium vs GPT-2 → GPT-2-large across 12 prompt types.
 
 ---
 
+### 🎲 [sampling-strategy-bench](https://github.com/JohnScheuer/sampling-strategy-bench)
+
+> *How much does sampling strategy cost in latency — and what does each buy in quality?*
+
+Latency and quality benchmark for five autoregressive decoding strategies (greedy,
+top-k, top-p, min-p, beam search) on GPT-2 and GPT-2-medium on RTX 2070. Measures
+ms/token overhead, type-token ratio, perplexity, and repetition rate. Identifies
+the Pareto frontier across latency, diversity, and quality axes.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Per-token timing · TTR · perplexity · repetition rate · Pareto frontier |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Stochastic sampling (top-k, top-p, min-p) adds only **3–13% latency** over greedy — strategy choice should be driven by quality, not cost
+- Greedy decoding degenerates at long outputs: **RepRate=0.430** — 43% of trigrams repeat
+- top_p(0.95) reduces RepRate from 0.430 to **0.010** at only **1.06x** overhead — best for open-ended generation
+- min_p achieves **better PPL than top-k** at similar diversity — adapts vocabulary size to model confidence dynamically
+- Beam search is **Pareto-dominated** on all axes — slower, less diverse, more repetitive than nucleus sampling
+- Pareto frontier: **greedy → top_k(k=10) → top_p(0.95)** — beam search lies strictly inside
+
+---
+
 ### 🔢 [quantization-profiler](https://github.com/JohnScheuer/quantization-profiler)
 
 > *Does lower precision actually speed up inference on consumer GPUs?*
@@ -730,16 +755,16 @@ tail perplexity and output distribution.
       "how to scale" "how far to    "which     "eliminate
                       push"          kernel"    overhead"
 
-    +----------------------------------------------------------+
-    |          Decoding & Generation Layer                     |
-    +----------+----------+----------+----------+------------+
-    |Speculative|Tree Spec.|Quantiz.  |Long Ctx  |Guided      |
-    |(linear)  |(tree)    |          |          |Decoding    |
-    |specul-   |tree-spec-|quantiz-  |long-ctx- |guided-     |
-    |decoding  |decoding  |profiler  |benchmark |decode-bench|
-    +----------+----------+----------+----------+------------+
-      "when it   "more      "precision "how far   "constraint
-       helps"     per step"  vs speed"  to push"   cost"
+    +------------------------------------------------------------------+
+    |          Decoding & Generation Layer                             |
+    +---------+---------+---------+---------+-----------+------------+
+    |Specul.  |Tree     |Quantiz. |Long Ctx |Guided     |Sampling    |
+    |(linear) |Spec.    |         |         |Decoding   |Strategy    |
+    |specul-  |tree-    |quantiz- |long-ctx-|guided-    |sampling-   |
+    |decoding |spec-dec |profiler |benchmark|decode-bench|strat-bench|
+    +---------+---------+---------+---------+-----------+------------+
+      "when it  "more     "precision "how far  "constraint "which
+       helps"    per step"  vs speed"  to push"  cost"       sampler"
 
     +----------------------------------------------------------+
     |          Analysis & Visualization (across all)           |
@@ -753,7 +778,8 @@ Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, multi-adapter
 serving, and disaggregated execution, parallelism modeling, kernel-level execution
 optimization, hardware limits, and decoding optimization — including linear and
-tree-based speculative decoding and constrained structured output generation.
+tree-based speculative decoding, constrained structured output generation, and
+sampling strategy benchmarking.
 
 ---
 
