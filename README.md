@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 41 projects covering the full LLM inference stack —
+> 42 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -350,6 +350,31 @@ sensitivity to isolate kernel launch and runtime dispatch overhead.
 - StaticCache is **slower** than DynamicCache in eager mode — speedup only materializes with graph capture
 - Graph benefit is largest at **small batch sizes** — shrinks as compute dominates launch overhead
 - Production systems (vLLM, TensorRT-LLM, SGLang) use compile + graph together — neither alone is sufficient
+
+---
+
+### 🔢 [batched-speculative-decoding-bench](https://github.com/JohnScheuer/batched-speculative-decoding-bench)
+
+> *Does speculative decoding maintain its gains at batch_size > 1 — and how does gamma interact with batch?*
+
+Analytical benchmark for speculative decoding across 7 batch sizes, 7 gammas,
+4 quality modes, and 2 serving modes. Measures speedup, acceptance rate, optimal
+gamma, and crossover point where speculation becomes slower than greedy. Closes
+the speculative decoding series.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Analytical model · gamma sweep · quality mode sweep · continuous refill simulation |
+
+**Key findings:**
+- Speculative decoding scales to batch=64 **with no degradation** — 2.03x at bs=1, 2.09x at bs=64
+- **Gamma is the critical tuning knob**, not batch size — optimal gamma depends on draft quality only
+- Over-speculating at q~0.65: gamma=12 → **15% slower** than greedy, gamma=16 → **31% slower**
+- Crossover point: **gamma~10** for medium-quality drafts — regression risk beyond this
+- Batch heterogeneity **caps speedup at ~1.5x** regardless of gamma — weakest request limits the batch
+- **gamma=2 is the safe default** for unknown draft quality — 1.37–1.50x across all modes, no regression
+- gamma=4 optimal **only when draft quality is confirmed high** (q~0.85)
 
 ---
 
@@ -1008,8 +1033,9 @@ multi-adapter serving, disaggregated execution, multi-instance request routing,
 SLO-aware autoscaling, cold start profiling, and real-trace workload validation,
 parallelism modeling, kernel-level execution optimization including prefill and
 decode attention kernels, hardware limits, long-context extension via RoPE scaling,
-and decoding optimization — including linear and tree-based speculative decoding,
-constrained structured output generation, and sampling strategy benchmarking.
+and decoding optimization — including linear, tree-based, and batched speculative
+decoding, constrained structured output generation, and sampling strategy
+benchmarking.
 
 ---
 
