@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 39 projects covering the full LLM inference stack —
+> 40 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -142,6 +142,31 @@ optimal routing policy under realistic serving conditions.
 - prefix_aware at high skew: imbalance=**0.856** — traffic concentrates, TTFT collapses to **280.3ms**
 - Round-robin and least-load are **equivalent** under homogeneous instances — routing intelligence only pays with skewed workloads
 - Cache locality and load balance are **not fundamentally in conflict** — a single queue-depth threshold resolves both
+
+---
+
+### 🔭 [output-length-predictor-bench](https://github.com/JohnScheuer/output-length-predictor-bench)
+
+> *How much does output length prediction quality affect KV-cache-aware scheduling?*
+
+Benchmark measuring effective throughput under 7 predictors (oracle, noisy_10/30/50,
+prompt_ratio, mean_only, none), 4 safety margins, 3 scheduling policies, and 4
+arrival rates. Closes a three-part loop with sharegpt-workload-bench and
+kv-cache-aware-scheduler.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Predictor sweep · safety margin sweep · effective throughput · preemption analysis |
+
+**Key findings:**
+- noisy_10 @ 1.5x margin achieves **99.7% of oracle gain** — calibration matters more than accuracy
+- Optimal safety margin is **1.5x** across almost all predictors — asymmetry favors overestimation
+- Greedy is **insensitive to prediction quality** — prediction only helps with admission-control scheduling
+- none → mean_only: **+500x effective throughput** — biggest gain from any calibrated prediction at all
+- mean_only → noisy_30: **+36%** — noisy_30 → oracle: **+2.3%** — returns are heavily front-loaded
+- Raw prediction accuracy and **scheduling calibration are separate concerns**
+- Engineering priority: build any calibrated predictor first — refinement yields diminishing returns
 
 ---
 
@@ -952,13 +977,13 @@ tail perplexity and output distribution.
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, KV-cache-aware
-scheduling, multi-adapter serving, disaggregated execution, multi-instance request
-routing, SLO-aware autoscaling, cold start profiling, and real-trace workload
-validation, parallelism modeling, kernel-level execution optimization including
-prefill and decode attention kernels, hardware limits, long-context extension via
-RoPE scaling, and decoding optimization — including linear and tree-based
-speculative decoding, constrained structured output generation, and sampling
-strategy benchmarking.
+scheduling with output length prediction, multi-adapter serving, disaggregated
+execution, multi-instance request routing, SLO-aware autoscaling, cold start
+profiling, and real-trace workload validation, parallelism modeling, kernel-level
+execution optimization including prefill and decode attention kernels, hardware
+limits, long-context extension via RoPE scaling, and decoding optimization —
+including linear and tree-based speculative decoding, constrained structured output
+generation, and sampling strategy benchmarking.
 
 ---
 
