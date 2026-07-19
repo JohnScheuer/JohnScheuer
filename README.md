@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 43 projects covering the full LLM inference stack —
+> 44 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -48,6 +48,31 @@ A discrete-tick simulator comparing three compaction policies:
 - ThresholdCompaction dominates GreedyCompaction across the entire Pareto frontier
 - 11 "free compaction" configurations — zero observable latency impact
 - Optimal point: τ=0.473, κ=128 → 2 events in 120s, ΔP95 = 0.00ms
+
+---
+
+### 💾 [system-prompt-cache-bench](https://github.com/JohnScheuer/system-prompt-cache-bench)
+
+> *How much does caching the system prompt KV state save — and when does the cache stop paying off?*
+
+Simulation measuring system prompt KV cache reuse across 540 configurations —
+5 system prompt sizes, 5 user prompt sizes, 3 output lengths, 4 arrival rates,
+2 cache budgets, 3 competing prompt counts, 2 popularity distributions.
+Derives closed-form savings ratio and validates against simulation.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · LRU/LFU eviction · savings ratio derivation · budget sweep |
+
+**Key findings:**
+- Prefill savings follow a closed-form ratio: **savings = sys_len / (sys_len + user_len)**
+- System prompt caching reduces prefill work by up to **99%** when system prompt dominates
+- Final TTFT gain (~13%) is smaller than prefill savings (~35%) — decode and queuing unaffected
+- Cache most valuable in short-output workloads: output=8 tokens → **17.7% TTFT reduction**
+- At output=128 tokens, prefill share falls to 72.8% and TTFT reduction drops to **12.6%**
+- LFU marginally better than LRU under skewed workloads — **cache sizing matters more than policy**
+- Cache collapses when too many prompts compete for budget — size by **hot working set**, not total count
 
 ---
 
@@ -1054,13 +1079,13 @@ Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, KV-cache-aware
 scheduling with output length prediction, chunked prefill under memory pressure,
-multi-turn KV reuse, multi-adapter serving, disaggregated execution, multi-instance
-request routing, SLO-aware autoscaling, cold start profiling, and real-trace workload
-validation, parallelism modeling, kernel-level execution optimization including
-prefill and decode attention kernels, hardware limits, long-context extension via
-RoPE scaling, and decoding optimization — including linear, tree-based, and batched
-speculative decoding, constrained structured output generation, and sampling strategy
-benchmarking.
+multi-turn KV reuse, system prompt caching, multi-adapter serving, disaggregated
+execution, multi-instance request routing, SLO-aware autoscaling, cold start
+profiling, and real-trace workload validation, parallelism modeling, kernel-level
+execution optimization including prefill and decode attention kernels, hardware
+limits, long-context extension via RoPE scaling, and decoding optimization —
+including linear, tree-based, and batched speculative decoding, constrained
+structured output generation, and sampling strategy benchmarking.
 
 ---
 
