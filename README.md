@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 32 projects covering the full LLM inference stack —
+> 33 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -67,6 +67,30 @@ A RadixTree-based prefix cache simulator with four eviction policies:
 - LFU dominates in small caches with skewed (Zipf) workloads
 - Multi-turn sessions push hit rate to 60%+
 - SizeLRU degrades with high alpha — blocks eviction of large nodes
+
+---
+
+### 🔀 [request-routing-sim](https://github.com/JohnScheuer/request-routing-sim)
+
+> *How do you distribute requests across multiple LLM serving instances to minimize TTFT?*
+
+Discrete-event simulator comparing four routing strategies (round-robin, least-load,
+prefix-aware, hybrid) across variable arrival rates, prefix sharing fractions, and
+workload skew. Models KV cache locality, queue cost, and load imbalance to find the
+optimal routing policy under realistic serving conditions.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · Zipf workload · prefix cache model · hybrid threshold sweep |
+
+**Key findings:**
+- Pure prefix-aware routing increases hit rate but **degrades TTFT** — queue builds faster than cache saves
+- Hybrid(thr=1) matches prefix_aware on hit rate (**0.895**) and round-robin on TTFT (**104.7ms**) simultaneously
+- Optimal threshold = **1** across all regimes — route to cached instance only if queue is empty or has 1 pending
+- prefix_aware at high skew: imbalance=**0.856** — traffic concentrates, TTFT collapses to **280.3ms**
+- Round-robin and least-load are **equivalent** under homogeneous instances — routing intelligence only pays with skewed workloads
+- Cache locality and load balance are **not fundamentally in conflict** — a single queue-depth threshold resolves both
 
 ---
 
@@ -733,16 +757,16 @@ tail perplexity and output distribution.
 
 ## How They Fit Together
 
-    +---------------------------------------------------------------+
-    |            LLM Inference Server (simulated)                   |
-    +-------+--------+----------+-------+--------+-------+---------+
-    |Schedul|Prefix  |KV        |Paged  |KV      |Disagg.|Multi    |
-    |er     |Cache   |Compact.  |Mem    |Quant.  |Serving|LoRA     |
-    |llm-   |prefix- |kv-cache- |paged- |kv-cache|disagg-|multi-   |
-    |infer  |cache   |compact   |attn   |quant   |prefill|lora-sim |
-    +-------+--------+----------+-------+--------+-------+---------+
-     "what   "what    "how to    "how to "how to  "split  "adapter
-      to run" to reuse" defrag"   alloc"  compress" phases" scheduling"
+    +--------------------------------------------------------------------------+
+    |            LLM Inference Server (simulated)                              |
+    +-------+--------+----------+-------+--------+-------+---------+----------+
+    |Schedul|Prefix  |KV        |Paged  |KV      |Disagg.|Multi    |Request   |
+    |er     |Cache   |Compact.  |Mem    |Quant.  |Serving|LoRA     |Routing   |
+    |llm-   |prefix- |kv-cache- |paged- |kv-cache|disagg-|multi-   |request-  |
+    |infer  |cache   |compact   |attn   |quant   |prefill|lora-sim |routing   |
+    +-------+--------+----------+-------+--------+-------+---------+----------+
+     "what   "what    "how to    "how to "how to  "split  "adapter  "which
+      to run" to reuse" defrag"   alloc"  compress" phases" sched"   instance"
 
     +----------------------------------------------------------+
     |          Hardware & Scaling Layer                        |
@@ -776,10 +800,10 @@ tail perplexity and output distribution.
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, multi-adapter
-serving, and disaggregated execution, parallelism modeling, kernel-level execution
-optimization, hardware limits, and decoding optimization — including linear and
-tree-based speculative decoding, constrained structured output generation, and
-sampling strategy benchmarking.
+serving, disaggregated execution, and multi-instance request routing, parallelism
+modeling, kernel-level execution optimization, hardware limits, and decoding
+optimization — including linear and tree-based speculative decoding, constrained
+structured output generation, and sampling strategy benchmarking.
 
 ---
 
