@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 36 projects covering the full LLM inference stack —
+> 37 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -438,6 +438,31 @@ and memory analysis across 360+ configurations.
 - Penalty routing on 8 shards: **99.4% efficiency**
 - Load imbalance drops from **56.89× → 1.01×** with penalty routing
 - Token dropping eliminated from **76% → 0%** with penalty strategy
+
+---
+
+### 🌀 [rope-scaling-bench](https://github.com/JohnScheuer/rope-scaling-bench)
+
+> *How far can you extend context beyond training — and which RoPE scaling method degrades least?*
+
+Benchmark measuring perplexity degradation for three RoPE scaling methods
+(linear, NTK-aware, YaRN) at 2x/4x/8x extension on TinyLlama-1.1B
+(training context=2048, evaluated to 8192). Closes a three-part long-context
+series with rope-vs-absolute-pe-benchmark and long-context-benchmark.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Sliding-window perplexity · absolute position_ids · extension ratio sweep |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- NTK-aware scaling: PPL **flat from 2048 to 8192** (4.627 → 4.628) — 4x extension at zero quality cost
+- Linear scaling **fails inside training window**: linear_4x PPL=**187.7** at 2048 tokens — model is broken
+- YaRN competitive but below NTK: yarn_4x baseline PPL=**5.737** vs NTK=**4.620**
+- NTK wins at every tested extension ratio (1.5x, 2x, 3x, 4x)
+- Tradeoff is **entirely about quality, not latency** — RoPE scaling adds negligible compute
+- Linear interpolation distorts **high-frequency components** — fine-grained local position collapses
 
 ---
 
@@ -879,9 +904,10 @@ Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, multi-adapter
 serving, disaggregated execution, multi-instance request routing, SLO-aware
 autoscaling, and cold start profiling, parallelism modeling, kernel-level execution
-optimization including prefill and decode attention kernels, hardware limits, and
-decoding optimization — including linear and tree-based speculative decoding,
-constrained structured output generation, and sampling strategy benchmarking.
+optimization including prefill and decode attention kernels, hardware limits,
+long-context extension via RoPE scaling, and decoding optimization — including
+linear and tree-based speculative decoding, constrained structured output
+generation, and sampling strategy benchmarking.
 
 ---
 
