@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 40 projects covering the full LLM inference stack —
+> 41 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -713,6 +713,32 @@ with per-layer analysis, activation hooks, and a predictive memory model.
 
 ---
 
+### 🧩 [chunked-prefill-kv-sim](https://github.com/JohnScheuer/chunked-prefill-kv-sim)
+
+> *What happens when chunked prefill meets KV cache pressure in continuous batching?*
+
+Step-level simulator measuring the interaction between chunked prefill and KV cache
+pressure under four policies (no_chunk, reserve, block, steal). Measures chunk waste
+rate — GPU compute discarded on blocked prefills — as the critical metric hidden by
+standard throughput reporting. Closes a loop with prefill-chunking-profiler and
+kv-cache-aware-scheduler.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Step-level simulation · chunk waste tracking · block/retry analysis · KV budget sweep |
+
+**Key findings:**
+- no_chunk **strictly dominates** block: same effective throughput, **0% vs 89.6%** chunk waste
+- block_rate=**1.539** — requests retry 1.5x on average, discarding all prior chunks each time
+- chunk_waste_rate is the **critical hidden metric** — standard metrics miss partial prefill waste
+- steal is **catastrophic**: 73.1% chunk waste + 20.1% preemption — creates destructive retry cycle
+- Upfront rejection wastes **zero compute** — mid-prefill blocking wastes **all prior chunk compute**
+- Chunked prefill under KV pressure requires **full KV reservation before first chunk** or projected footprint admission
+- Naive incremental allocation wastes GPU compute with **no throughput benefit**
+
+---
+
 ### ⏱️ [prefill-chunking-profiler](https://github.com/JohnScheuer/prefill-chunking-profiler)
 
 > *Is chunked prefill a latency optimization — or a scheduling optimization?*
@@ -977,13 +1003,13 @@ tail perplexity and output distribution.
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, KV-cache-aware
-scheduling with output length prediction, multi-adapter serving, disaggregated
-execution, multi-instance request routing, SLO-aware autoscaling, cold start
-profiling, and real-trace workload validation, parallelism modeling, kernel-level
-execution optimization including prefill and decode attention kernels, hardware
-limits, long-context extension via RoPE scaling, and decoding optimization —
-including linear and tree-based speculative decoding, constrained structured output
-generation, and sampling strategy benchmarking.
+scheduling with output length prediction, chunked prefill under memory pressure,
+multi-adapter serving, disaggregated execution, multi-instance request routing,
+SLO-aware autoscaling, cold start profiling, and real-trace workload validation,
+parallelism modeling, kernel-level execution optimization including prefill and
+decode attention kernels, hardware limits, long-context extension via RoPE scaling,
+and decoding optimization — including linear and tree-based speculative decoding,
+constrained structured output generation, and sampling strategy benchmarking.
 
 ---
 
