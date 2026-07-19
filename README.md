@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 33 projects covering the full LLM inference stack —
+> 34 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -67,6 +67,31 @@ A RadixTree-based prefix cache simulator with four eviction policies:
 - LFU dominates in small caches with skewed (Zipf) workloads
 - Multi-turn sessions push hit rate to 60%+
 - SizeLRU degrades with high alpha — blocks eviction of large nodes
+
+---
+
+### 📈 [slo-aware-autoscaling-sim](https://github.com/JohnScheuer/slo-aware-autoscaling-sim)
+
+> *How many instances do you need to guarantee p99 TTFT under 500ms?*
+
+Discrete-event simulator comparing four autoscaling policies (reactive,
+predictive_headroom, conservative, fixed) across five workload patterns and
+four instance startup delays. Measures SLO violation rate, p99 TTFT, mean
+instance count, and cost-compliance tradeoff.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · Poisson + burst workloads · startup delay sweep |
+
+**Key findings:**
+- Startup delay is the **dominant factor** — same policy: SLO=0.050 at 5s vs 0.176 at 60s
+- Conservative wins at **fast startup** (5–15s) — simple headroom absorbs bursts before queues build
+- Predictive + headroom wins at **slow startup** (30–60s) — trend detection gives head start
+- Reactive is **consistently worst** — responds after violations already occurred
+- fixed_4 is **simultaneously more expensive and less compliant** than adaptive policies
+- Pure prediction without headroom **fails** — explicit headroom required regardless of forecast quality
+- Practical lesson: invest in **fast instance startup** before tuning autoscaling algorithms
 
 ---
 
@@ -757,16 +782,16 @@ tail perplexity and output distribution.
 
 ## How They Fit Together
 
-    +--------------------------------------------------------------------------+
-    |            LLM Inference Server (simulated)                              |
-    +-------+--------+----------+-------+--------+-------+---------+----------+
-    |Schedul|Prefix  |KV        |Paged  |KV      |Disagg.|Multi    |Request   |
-    |er     |Cache   |Compact.  |Mem    |Quant.  |Serving|LoRA     |Routing   |
-    |llm-   |prefix- |kv-cache- |paged- |kv-cache|disagg-|multi-   |request-  |
-    |infer  |cache   |compact   |attn   |quant   |prefill|lora-sim |routing   |
-    +-------+--------+----------+-------+--------+-------+---------+----------+
-     "what   "what    "how to    "how to "how to  "split  "adapter  "which
-      to run" to reuse" defrag"   alloc"  compress" phases" sched"   instance"
+    +-------------------------------------------------------------------------------------+
+    |            LLM Inference Server (simulated)                                         |
+    +-------+--------+--------+-------+--------+-------+--------+---------+-------------+
+    |Schedul|Prefix  |KV      |Paged  |KV      |Disagg.|Multi   |Request  |Autoscaling  |
+    |er     |Cache   |Compact.|Mem    |Quant.  |Serving|LoRA    |Routing  |             |
+    |llm-   |prefix- |kv-     |paged- |kv-cache|disagg-|multi-  |request- |slo-aware-   |
+    |infer  |cache   |compact |attn   |quant   |prefill|lora-sim|routing  |autoscaling  |
+    +-------+--------+--------+-------+--------+-------+--------+---------+-------------+
+     "what   "what    "how to  "how to "how to  "split  "adapter "which    "how many
+      to run" to reuse" defrag"  alloc"  compress" phases" sched"  instance" instances"
 
     +----------------------------------------------------------+
     |          Hardware & Scaling Layer                        |
@@ -800,10 +825,10 @@ tail perplexity and output distribution.
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, multi-adapter
-serving, disaggregated execution, and multi-instance request routing, parallelism
-modeling, kernel-level execution optimization, hardware limits, and decoding
-optimization — including linear and tree-based speculative decoding, constrained
-structured output generation, and sampling strategy benchmarking.
+serving, disaggregated execution, multi-instance request routing, and SLO-aware
+autoscaling, parallelism modeling, kernel-level execution optimization, hardware
+limits, and decoding optimization — including linear and tree-based speculative
+decoding, constrained structured output generation, and sampling strategy benchmarking.
 
 ---
 
