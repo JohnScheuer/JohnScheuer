@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 44 projects covering the full LLM inference stack —
+> 45 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -657,6 +657,34 @@ concurrency analysis, serving simulation, and RPS capacity planning.
 
 ---
 
+### 🔬 [attention-sparsity-bench](https://github.com/JohnScheuer/attention-sparsity-bench)
+
+> *How sparse is the attention matrix — and is that sparsity safe to exploit via token eviction?*
+
+Systematic measurement of structural attention sparsity in GPT-2 and GPT-2-medium
+across layers, heads, sequence lengths, and text domains. Introduces KL divergence
+as the ground-truth eviction safety metric — separating retained weight fraction
+(optimistic) from distribution distortion (real). Produces head-structured eviction
+recommendations per pattern type and layer depth.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Attention extraction · sparsity CV · Jaccard overlap · KL divergence · head pattern classification |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- **99.5%** of attention entries below 0.05 at seq=512 — architectural limit, not capacity-dependent
+- Sparsity CV across 4 text domains: **0.013%** — Jaccard overlap: **98.6%** — structural, not content-driven
+- keep=20% retains **95.6%** attention weight but KL=**0.72** — distribution is materially distorted
+- Safe operating point: **keep=50%** where KL drops to **0.11**
+- global heads (7% of total): KL=**3.84** at keep=20% — concentrate nearly all eviction risk
+- local heads (46% of total): KL=**0.29** at keep=20% — eviction nearly free
+- Early layers **2x riskier** than late layers — all top-5 riskiest heads in layers 0–1
+- Head-structured policy: **40–60% KV reduction** with near-zero distortion vs 80% uniform at KL=0.72
+
+---
+
 ### ⚡ [flash-decoding-bench](https://github.com/JohnScheuer/flash-decoding-bench)
 
 > *Flash Decoding vs SDPA at decode time — when does KV-parallelism pay off?*
@@ -1079,13 +1107,14 @@ Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, KV-cache-aware
 scheduling with output length prediction, chunked prefill under memory pressure,
-multi-turn KV reuse, system prompt caching, multi-adapter serving, disaggregated
-execution, multi-instance request routing, SLO-aware autoscaling, cold start
-profiling, and real-trace workload validation, parallelism modeling, kernel-level
-execution optimization including prefill and decode attention kernels, hardware
-limits, long-context extension via RoPE scaling, and decoding optimization —
-including linear, tree-based, and batched speculative decoding, constrained
-structured output generation, and sampling strategy benchmarking.
+multi-turn KV reuse, system prompt caching, attention sparsity profiling,
+multi-adapter serving, disaggregated execution, multi-instance request routing,
+SLO-aware autoscaling, cold start profiling, and real-trace workload validation,
+parallelism modeling, kernel-level execution optimization including prefill and
+decode attention kernels, hardware limits, long-context extension via RoPE scaling,
+and decoding optimization — including linear, tree-based, and batched speculative
+decoding, constrained structured output generation, and sampling strategy
+benchmarking.
 
 ---
 
