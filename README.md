@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 45 projects covering the full LLM inference stack —
+> 46 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -657,6 +657,32 @@ concurrency analysis, serving simulation, and RPS capacity planning.
 
 ---
 
+### ✂️ [prompt-compression-bench](https://github.com/JohnScheuer/prompt-compression-bench)
+
+> *How much can you compress the prompt before prefill — and what does it cost in quality?*
+
+Benchmark comparing four prompt compression strategies (attention_oracle, lexical,
+stride, random) across two models, three prompt lengths, and five keep fractions.
+Measures prefill speedup, KL divergence, delta-NLL, and top-1 agreement. Closes
+a triangle with attention-sparsity-bench and kv-cache-eviction-benchmark.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Per-strategy timing · KL divergence · delta-NLL · top-1 agreement · tradeoff frontier |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- keep=0.25 at prompt_len=512: GPT-2 **3.03x** speedup — GPT-2-medium **4.04x** speedup
+- Lexical heuristics **outperform attention oracle** on GPT-2-medium at long prompts
+- GPT-2-medium, keep=0.75: lexical KL=**0.090** vs attention_oracle KL=**0.117**
+- Attention mass is a **noisier signal in larger models** — not a reliable compression criterion
+- Lexical compression requires **zero forward pass** — deployable with no GPU cost
+- Attention oracle requires full prefill to score tokens — **net-negative for single requests**
+- Protected positions (first 4, last 16 tokens) essential — removing them collapses quality
+
+---
+
 ### 🔬 [attention-sparsity-bench](https://github.com/JohnScheuer/attention-sparsity-bench)
 
 > *How sparse is the attention matrix — and is that sparsity safe to exploit via token eviction?*
@@ -1105,16 +1131,16 @@ tail perplexity and output distribution.
 
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
-from scheduling and caching to memory allocation, compression, KV-cache-aware
-scheduling with output length prediction, chunked prefill under memory pressure,
-multi-turn KV reuse, system prompt caching, attention sparsity profiling,
-multi-adapter serving, disaggregated execution, multi-instance request routing,
-SLO-aware autoscaling, cold start profiling, and real-trace workload validation,
-parallelism modeling, kernel-level execution optimization including prefill and
-decode attention kernels, hardware limits, long-context extension via RoPE scaling,
-and decoding optimization — including linear, tree-based, and batched speculative
-decoding, constrained structured output generation, and sampling strategy
-benchmarking.
+from scheduling and caching to memory allocation, compression, prompt compression,
+KV-cache-aware scheduling with output length prediction, chunked prefill under
+memory pressure, multi-turn KV reuse, system prompt caching, attention sparsity
+profiling, multi-adapter serving, disaggregated execution, multi-instance request
+routing, SLO-aware autoscaling, cold start profiling, and real-trace workload
+validation, parallelism modeling, kernel-level execution optimization including
+prefill and decode attention kernels, hardware limits, long-context extension via
+RoPE scaling, and decoding optimization — including linear, tree-based, and batched
+speculative decoding, constrained structured output generation, and sampling
+strategy benchmarking.
 
 ---
 
