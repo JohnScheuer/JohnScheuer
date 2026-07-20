@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 46 projects covering the full LLM inference stack —
+> 47 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -450,6 +450,31 @@ and a full sweep over branch factor, depth, budget, and draft quality.
 - Depth shows **diminishing returns** — budget better spent on breadth than depth
 - At draft quality=0.9, tree and linear **converge** — tree solves a specific failure mode, not a general one
 - Tree advantage largest when draft is unreliable: quality=0.3 → **14.22x speedup**
+
+---
+
+### 🎯 [draft-model-selection-bench](https://github.com/JohnScheuer/draft-model-selection-bench)
+
+> *Given a fixed target model, which draft model maximizes speculative decoding speedup?*
+
+Systematic benchmark for draft model selection — measuring tokenizer compatibility,
+cost ratio, acceptance rate, and predicted speedup for every candidate draft against
+Qwen2-1.5B as target. Closes a five-project speculative decoding arc.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers · BitsAndBytes |
+| Method | Compatibility audit · cost ratio sweep · acceptance simulation · analytical speedup model |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Cross-family drafts (GPT-2, TinyLlama) fail **all 4 compatibility checks** — tokenizer, vocab, specials, encoding
+- int4 quantization makes draft **slower**, not faster — BitsAndBytes dequantization overhead at bs=1
+- GPT-2 fp16 would give cost_ratio=**4.62x** — but incompatible; compatibility constrains the search space
+- Qwen2-0.5B fp16: cost_ratio=**1.22x** — all predicted speedups **below 1.0x** on RTX 2070
+- **Alpha trap**: Qwen2-1.5B int4 achieves alpha=0.875 but speedup=0.35–0.57x — acceptance is not enough
+- **Compatibility trap**: viable drafts must share tokenizer with target — same family, rarely 3x cheaper
+- Speculative decoding on consumer GPU requires **3x+ cost ratio** — conditions more restrictive than literature suggests
 
 ---
 
@@ -1138,9 +1163,9 @@ profiling, multi-adapter serving, disaggregated execution, multi-instance reques
 routing, SLO-aware autoscaling, cold start profiling, and real-trace workload
 validation, parallelism modeling, kernel-level execution optimization including
 prefill and decode attention kernels, hardware limits, long-context extension via
-RoPE scaling, and decoding optimization — including linear, tree-based, and batched
-speculative decoding, constrained structured output generation, and sampling
-strategy benchmarking.
+RoPE scaling, and decoding optimization — including linear, tree-based, batched,
+and draft-selection-guided speculative decoding, constrained structured output
+generation, and sampling strategy benchmarking.
 
 ---
 
