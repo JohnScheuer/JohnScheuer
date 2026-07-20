@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 47 projects covering the full LLM inference stack —
+> 48 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -981,6 +981,32 @@ Compares GPT-2 → GPT-2-medium vs GPT-2 → GPT-2-large across 12 prompt types.
 
 ---
 
+### 🧮 [inference-time-scaling-bench](https://github.com/JohnScheuer/inference-time-scaling-bench)
+
+> *How much does each inference-time scaling strategy improve accuracy — and at what latency cost?*
+
+Systematic benchmark of inference-time scaling across chain-of-thought, repeated
+sampling, and self-consistency on 32 synthetic arithmetic reasoning tasks. Measures
+accuracy, latency multiplier, token multiplier, and efficiency frontier across
+Qwen2-0.5B and Qwen2-1.5B.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | 6 task types · 5 strategies · accuracy/latency frontier · efficiency analysis |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- CoT is the **dominant lever**: direct=3–6% → cot_greedy_256=**65–72%** accuracy
+- Repeated sampling without CoT: **6.2% at N=8** — diversity over weak reasoning is useless
+- cot_greedy_256 is **most efficient**: accuracy/latency = 0.0623 (0.5B), 0.0758 (1.5B)
+- cot_greedy_512 adds **nothing** over 256 — reasoning plateau at **170–180 tokens**
+- Diminishing returns severe: N=4→N=8 majority: **+3.1pp at 2x cost** (74x total latency)
+- **Depth vs diversity is model-size dependent**: 0.5B favors depth, 1.5B favors diverse voting
+- Scaling **cannot rescue capability gaps** — conditional tasks: 0% at direct = 0% with CoT = 0% with N=4
+
+---
+
 ### 🎲 [sampling-strategy-bench](https://github.com/JohnScheuer/sampling-strategy-bench)
 
 > *How much does sampling strategy cost in latency — and what does each buy in quality?*
@@ -1163,9 +1189,10 @@ profiling, multi-adapter serving, disaggregated execution, multi-instance reques
 routing, SLO-aware autoscaling, cold start profiling, and real-trace workload
 validation, parallelism modeling, kernel-level execution optimization including
 prefill and decode attention kernels, hardware limits, long-context extension via
-RoPE scaling, and decoding optimization — including linear, tree-based, batched,
-and draft-selection-guided speculative decoding, constrained structured output
-generation, and sampling strategy benchmarking.
+RoPE scaling, inference-time scaling, and decoding optimization — including linear,
+tree-based, batched, and draft-selection-guided speculative decoding, constrained
+structured output generation, chain-of-thought reasoning, and sampling strategy
+benchmarking.
 
 ---
 
