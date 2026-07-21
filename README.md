@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 51 projects covering the full LLM inference stack —
+> 52 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -759,6 +759,32 @@ a triangle with attention-sparsity-bench and kv-cache-eviction-benchmark.
 
 ---
 
+### 🎛️ [mixed-precision-kv-policy](https://github.com/JohnScheuer/mixed-precision-kv-policy)
+
+> *INT8 on early layers + INT4 on late layers — how much KV budget recovered at near-INT8 quality?*
+
+Layer-aware mixed-precision KV cache quantization benchmark. Tests 9 INT8/INT4
+split policies on GPT-2 to find the Pareto-optimal point between uniform INT8
+(50% reduction) and uniform INT4 (75% reduction, high quality cost). Closes a
+triangle with attention-sparsity-bench and kv-cache-quantization-bench.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Per-layer KV hook · delta-NLL · mean-KL · top-1 agreement · Pareto frontier |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- int8_first10_int4_last2: **54% reduction** at delta_nll=**0.016** vs uniform INT4 delta_nll=**0.917**
+- Ablation confirms: INT4 early + INT8 late is **12x worse** than INT8 early + INT4 late at same ratio
+- Early layer sensitivity from attention-sparsity-bench **transfers directly to quantization**
+- INT4 collapses at long prompts: prompt=512 → uniform INT4 delta_nll=**1.696**, mixed=**0.007**
+- Practical operating point: **int8_first10_int4_last2** — 4% extra vs INT8, near-zero quality cost
+- Split point is **not a hyperparameter search** — layer KL profile determines it analytically
+- For 7B models, 4% extra reduction = **hundreds of MB** of KV budget recovered
+
+---
+
 ### 🔬 [attention-sparsity-bench](https://github.com/JohnScheuer/attention-sparsity-bench)
 
 > *How sparse is the attention matrix — and is that sparsity safe to exploit via token eviction?*
@@ -1260,17 +1286,17 @@ tail perplexity and output distribution.
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, fragmentation dynamics,
-compression, prompt compression, KV-cache-aware scheduling with output length
-prediction, chunked prefill under memory pressure, multi-turn KV reuse, system
-prompt caching, KV cache tiering, attention sparsity profiling, prefill-decode
-interference profiling, multi-adapter serving, disaggregated execution,
-multi-instance request routing, SLO-aware autoscaling, cold start profiling, and
-real-trace workload validation, parallelism modeling, kernel-level execution
-optimization including prefill and decode attention kernels, hardware limits,
-long-context extension via RoPE scaling, inference-time scaling, and decoding
-optimization — including linear, tree-based, batched, and draft-selection-guided
-speculative decoding, constrained structured output generation, chain-of-thought
-reasoning, and sampling strategy benchmarking.
+compression, mixed-precision KV quantization, prompt compression, KV-cache-aware
+scheduling with output length prediction, chunked prefill under memory pressure,
+multi-turn KV reuse, system prompt caching, KV cache tiering, attention sparsity
+profiling, prefill-decode interference profiling, multi-adapter serving,
+disaggregated execution, multi-instance request routing, SLO-aware autoscaling,
+cold start profiling, and real-trace workload validation, parallelism modeling,
+kernel-level execution optimization including prefill and decode attention kernels,
+hardware limits, long-context extension via RoPE scaling, inference-time scaling,
+and decoding optimization — including linear, tree-based, batched, and
+draft-selection-guided speculative decoding, constrained structured output
+generation, chain-of-thought reasoning, and sampling strategy benchmarking.
 
 ---
 
