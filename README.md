@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 55 projects covering the full LLM inference stack —
+> 56 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1250,6 +1250,31 @@ on GPT-2 and GPT-2-medium, with batch size sweep and perplexity tracking.
 - INT4 reduces model memory by 76–82% with perplexity delta < 0.003
 - On Turing-class GPUs, bitsandbytes quantization hurts decode throughput
 - The value of INT4/INT8 here is capacity, not speed
+
+---
+
+### 📊 [serving-cost-model-v2](https://github.com/JohnScheuer/serving-cost-model-v2)
+
+> *How much does it cost to serve 1M tokens in 2026 — incorporating data from 30+ benchmarks?*
+
+Two-KPI serving cost model synthesizing empirical data from disaggregation,
+KV quantization, tiering, prefetch, fragmentation, mixed precision, eviction,
+and system prompt caching benchmarks. Computes incremental cost reduction per
+optimization and ranks by marginal impact. Successor to inference-cost-calculator.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Incremental scenario waterfall · two-KPI ($/1M output + $/1M request) · sensitivity analysis |
+
+**Key findings:**
+- Full stack: baseline **$3.95** → optimized **$0.095**/1M output tokens (**-97.6%**)
+- Compaction is the **#1 lever**: -39.1% — fragmentation tax is the largest avoidable cost
+- INT8 KV and disaggregation nearly equal: **-24.9%** vs **-24.1%** — they stack independently
+- Prefetch: **~0% cost impact** despite 11-73x stall reduction — latency optimization, not cost
+- System prompt cache: **10x more impactful** in tool_call (26% prefill) vs medium_chat (2% prefill)
+- Two KPIs required: tool_call **$0.114/1M output** but **$2.7/1M request** — $/output misleads
+- All constants sourced from **named benchmarks** — no synthetic assumptions
 
 ---
 
