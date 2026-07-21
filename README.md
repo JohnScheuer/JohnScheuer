@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 56 projects covering the full LLM inference stack —
+> 57 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -638,6 +638,31 @@ with FP16 vs INT4 comparison.
 - **40× speedup** at 8K vs vanilla attention
 - INT4 **OOMs at 32K** — KV-cache is the real bottleneck, not model weights
 - Quantization is NOT a long-context solution
+
+---
+
+### 🧩 [lora-kv-interference-bench](https://github.com/JohnScheuer/lora-kv-interference-bench)
+
+> *Does LoRA adapter swapping accelerate KV cache fragmentation — and what is the throughput cost?*
+
+Simulation measuring second-order interference between adapter swap churn and
+KV cache fragmentation across six policies (single, round-robin, batch-swap,
+hotset variants) under heavy and bimodal workloads. Connects multi-lora-serving-sim,
+continuous-batching-fragmentation-sim, and serving-cost-model-v2.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · per-tick fragmentation tracking · swap/compact event log |
+
+**Key findings:**
+- Adapter swap adds **5–23pp fragmentation overhead** under heavy load
+- Qwen2-0.5B (4–24MB adapters): **zero throughput penalty** — small adapters nearly free
+- Qwen2-1.5B (8–64MB adapters): **9–11% throughput loss** even with best policy
+- Hotset drops fragmentation by **23pp** but loses **49% throughput** — memory from KV budget
+- **No policy dominates** for large models under heavy load — every policy loses on one dimension
+- Core finding: **adapter size / memory budget ratio** determines severity of the tradeoff
+- Separate memory pool for adapters (not from KV budget) is the only clean solution at scale
 
 ---
 
