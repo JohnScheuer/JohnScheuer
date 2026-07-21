@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 48 projects covering the full LLM inference stack —
+> 49 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -914,6 +914,32 @@ showing that chunking hurts single-request TTFT but improves fairness under long
 
 ---
 
+### 🗄️ [kv-cache-tiering-bench](https://github.com/JohnScheuer/kv-cache-tiering-bench)
+
+> *Where does evicted KV cache go — and when does reloading from a tier beat recomputing?*
+
+Benchmark measuring spill and reload cost for six KV cache tiers (CPU fp16 pinned
+pool, CPU fp16 unpinned, CPU fp16 pinned, CPU int8, disk fp16, disk int8) across
+two models and three prompt lengths. Computes breakeven reuse probability and
+optimal tier policy. Connects four prior KV cache projects.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers · safetensors |
+| Method | Per-tier timing · bandwidth measurement · breakeven analysis · pool amortization |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) · PCIe ~3.1 GB/s measured |
+
+**Key findings:**
+- CPU fp16 pinned pool: reload=**2.96ms** vs prefill=**251ms** at prompt=1024 — **85x faster**
+- Pool amortizes at **1 reuse** — alloc=0.09ms, saved_per_reuse=5.40ms
+- Optimal policy is **binary**: p_reuse < 0.02 → discard, p_reuse >= 0.02 → cpu_fp16_pinned_pool
+- Disk tiering **fails after fsync**: 129–226ms reload at prompt=1024 — threshold exceeds 1.0
+- cpu_int8 is **5–6x slower** than cpu_fp16_pinned_pool — INT8 halves size but 5x hurts reload
+- Reuse threshold: **1–2%** — any workload with repeated prompts benefits from CPU tiering
+- No other tier appears in the **optimal policy** at any reuse probability
+
+---
+
 ### 🧠 [kv-cache-eviction-benchmark](https://github.com/JohnScheuer/kv-cache-eviction-benchmark)
 
 > *Which tokens should an LLM keep when it cannot retain the full KV-cache?*
@@ -1184,15 +1210,15 @@ Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, compression, prompt compression,
 KV-cache-aware scheduling with output length prediction, chunked prefill under
-memory pressure, multi-turn KV reuse, system prompt caching, attention sparsity
-profiling, multi-adapter serving, disaggregated execution, multi-instance request
-routing, SLO-aware autoscaling, cold start profiling, and real-trace workload
-validation, parallelism modeling, kernel-level execution optimization including
-prefill and decode attention kernels, hardware limits, long-context extension via
-RoPE scaling, inference-time scaling, and decoding optimization — including linear,
-tree-based, batched, and draft-selection-guided speculative decoding, constrained
-structured output generation, chain-of-thought reasoning, and sampling strategy
-benchmarking.
+memory pressure, multi-turn KV reuse, system prompt caching, KV cache tiering,
+attention sparsity profiling, multi-adapter serving, disaggregated execution,
+multi-instance request routing, SLO-aware autoscaling, cold start profiling, and
+real-trace workload validation, parallelism modeling, kernel-level execution
+optimization including prefill and decode attention kernels, hardware limits,
+long-context extension via RoPE scaling, inference-time scaling, and decoding
+optimization — including linear, tree-based, batched, and draft-selection-guided
+speculative decoding, constrained structured output generation, chain-of-thought
+reasoning, and sampling strategy benchmarking.
 
 ---
 
