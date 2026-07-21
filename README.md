@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 50 projects covering the full LLM inference stack —
+> 51 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -376,6 +376,32 @@ with perplexity, memory, and latency measurement across sequence lengths and lay
 - Quantization error concentrates in **later layers** — early layers tolerate INT4 with near-zero impact
 - Mixed-precision policy (INT4 early, INT8 late) could recover most of 75% reduction at INT8 quality
 - On CPU, quantization value is **capacity, not speed** — identical conclusion to weight quantization
+
+---
+
+### ⚔️ [prefill-decode-interference-bench](https://github.com/JohnScheuer/prefill-decode-interference-bench)
+
+> *How much does prefill inflate TTFT for new requests when decode is already running on the GPU?*
+
+Real hardware benchmark measuring TTFT inflation and decode slowdown when prefill
+and decode are co-located on the same GPU. Closes the loop on the disaggregated
+serving simulation with actual RTX 2070 measurements across two models, three
+prompt lengths, and two batch sizes.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Cold vs hot prefill timing · parallel CUDA stream measurement · wall overlap efficiency |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- TTFT inflation at prompt=512, 1.5B, batch=4: **4.96x** — new request waits **+420ms** before prefill starts
+- TTFT inflation at prompt=512, 0.5B: **1.25–1.27x** — penalty **+12–14ms** consistently
+- Decode slowdown: **0.95–1.07x** — decode nearly immune (memory-bound vs compute-bound)
+- wall_overlap_efficiency: **~0.91–1.02x** — co-location is serial execution with TTFT inflation, not parallelism
+- TTFT penalty **grows with prompt length** — longer prompts amplify the interference effect
+- Larger models show **severely worse pollution** — 1.5B prompt=256: **1.74x** inflation vs 0.5B **1.19x**
+- Grounds disaggregated-prefill-decode-sim: analytical 10.76x gain now backed by real interference data
 
 ---
 
@@ -1236,14 +1262,15 @@ Together they cover the full lifecycle of a request in an LLM server:
 from scheduling and caching to memory allocation, fragmentation dynamics,
 compression, prompt compression, KV-cache-aware scheduling with output length
 prediction, chunked prefill under memory pressure, multi-turn KV reuse, system
-prompt caching, KV cache tiering, attention sparsity profiling, multi-adapter
-serving, disaggregated execution, multi-instance request routing, SLO-aware
-autoscaling, cold start profiling, and real-trace workload validation, parallelism
-modeling, kernel-level execution optimization including prefill and decode attention
-kernels, hardware limits, long-context extension via RoPE scaling, inference-time
-scaling, and decoding optimization — including linear, tree-based, batched, and
-draft-selection-guided speculative decoding, constrained structured output
-generation, chain-of-thought reasoning, and sampling strategy benchmarking.
+prompt caching, KV cache tiering, attention sparsity profiling, prefill-decode
+interference profiling, multi-adapter serving, disaggregated execution,
+multi-instance request routing, SLO-aware autoscaling, cold start profiling, and
+real-trace workload validation, parallelism modeling, kernel-level execution
+optimization including prefill and decode attention kernels, hardware limits,
+long-context extension via RoPE scaling, inference-time scaling, and decoding
+optimization — including linear, tree-based, batched, and draft-selection-guided
+speculative decoding, constrained structured output generation, chain-of-thought
+reasoning, and sampling strategy benchmarking.
 
 ---
 
