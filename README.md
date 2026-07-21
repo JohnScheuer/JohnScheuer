@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 54 projects covering the full LLM inference stack —
+> 55 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1007,6 +1007,31 @@ showing that chunking hurts single-request TTFT but improves fairness under long
 - Chunking only reduces peak memory modestly
 - In mixed workloads, chunking reduces short-request TTFT by ~20–23%
 - Chunk256 gives the best compromise between long-request latency and fairness
+
+---
+
+### 📦 [kv-cache-prefetch-bench](https://github.com/JohnScheuer/kv-cache-prefetch-bench)
+
+> *Can speculative prefetching eliminate the CPU-to-GPU KV reload stall in multi-turn conversations?*
+
+Simulation of speculative KV cache prefetching across six policies (reactive,
+next_turn, confidence_05/07, utility_005/010) under variable workloads and
+model sizes. Measures stall reduction, hit rate, and wasted prefetches.
+Closes a loop with kv-cache-tiering-bench and multi-turn-kv-reuse-bench.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · per-turn event log · hit/waste tradeoff · stall reduction |
+
+**Key findings:**
+- next_turn prefetch reduces stall by **73x** (0.5B) and **11x** (1.5B) vs reactive baseline
+- confidence_05 captures **82-88%** of stall reduction with **~40% less** wasted prefetches
+- Utility scoring (p_reuse/size_mb) **fails on large models** — size penalty collapses hit rate to 26.9%
+- Bimodal workloads **amplify prefetch benefit** — heavy_mixed stall 4.847ms → 0.426ms
+- confidence_05 is the **best practical policy**: p(next_turn) >= 0.50 threshold, robust across model sizes
+- Size normalization must use **reload_cost in numerator**, not raw MB in denominator
+- Prefetch buffer design: **confidence threshold as gate**, size as tiebreaker for capacity limits
 
 ---
 
