@@ -580,6 +580,25 @@ assumptions used across the portfolio.
 
 ---
 
+### 📊 [inference-dashboard](https://inference-dashboard-elt5ygbauvqecfukshtwew.streamlit.app/)
+
+> *Consolidated interactive dashboard for 20 research projects.*
+
+A single Streamlit dashboard aggregating all simulation and profiling results:
+10 subsystems, 1700+ runs, interactive Plotly visualizations.
+
+| | |
+|---|---|
+| Stack | Python · Streamlit · Plotly · Pandas |
+| Content | Speculative decoding, tensor allocator, MoE routing, KV disaggregation, attention kernels, prefix cache, real hardware profiling, continuous batching |
+
+**Key findings:**
+- Single link for portfolio presentation
+- Side-by-side simulation vs. real hardware comparison
+- Interactive charts — no installation required
+
+---
+
 ### 🏗️ [inference-pipeline-e2e](https://github.com/JohnScheuer/inference-pipeline-e2e)
 
 > *The capstone: a complete LLM serving pipeline with streaming and per-phase metrics.*
@@ -1081,6 +1100,32 @@ Compares GPT-2 → GPT-2-medium vs GPT-2 → GPT-2-large across 12 prompt types.
 - GPT-2 → GPT-2-medium: mean best speedup **1.013×**, 6/12 prompts positive
 - Speedup requires both high draft-target agreement and sufficiently expensive target
 - Speculative decoding is not universal — it is a conditional systems optimization
+
+---
+
+### 🛑 [token-budget-controller](https://github.com/JohnScheuer/token-budget-controller)
+
+> *Can chain-of-thought generation be stopped early without hurting accuracy — and how much is actually saved?*
+
+Benchmark testing runtime plateau detection for CoT generation across three
+detector families (strict_confidence, loose_entropy, answer_terminator) with
+oracle analysis to measure the real savings ceiling. Corrects the inference from
+inference-time-scaling-bench about the magnitude of wasted reasoning compute.
+
+| | |
+|---|---|
+| Stack | Python · PyTorch · Transformers |
+| Method | Token-by-token trace collection · oracle stop analysis · detector sweep · false positive rate |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- Oracle savings ceiling: **18–27 tokens** — not 200+ as fixed-budget analysis implied
+- Loose entropy detector: accuracy **6.25%**, false positive **65.6%** — destroys correctness
+- strict_confidence: accuracy **71.9%**, saved **8.78 tokens**, oracle capture **48.0%**
+- answer_terminator_4: accuracy **71.9%**, saved **8.63 tokens**, zero false positives
+- Strict prompt forcing answer format: accuracy collapses to **6–9%** — not a substitute
+- Problem is **not detecting end of reasoning** — it is trimming tail after answer stabilizes
+- **Answer-aware tail trimming** is the only practical direction — generic plateau signals too noisy
 
 ---
 
