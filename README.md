@@ -26,9 +26,34 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 49 projects covering the full LLM inference stack —
+> 50 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
+
+---
+
+### 🧩 [continuous-batching-fragmentation-sim](https://github.com/JohnScheuer/continuous-batching-fragmentation-sim)
+
+> *How does KV cache fragmentation accumulate over time in a running continuous batching server?*
+
+Discrete-event simulation measuring fragmentation growth, compaction policy
+effectiveness, and allocation strategy tradeoffs across workload intensities and
+request size distributions. Closes a loop with kv-cache-compaction-lab,
+paged-attention-sim, and kv-cache-tiering-bench.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · fragmentation timeseries · compaction efficiency · Pareto frontier |
+
+**Key findings:**
+- Fragmentation without compaction reaches **44–52%** under heavy workloads in 60 minutes
+- Paged allocation wins for **uniform** workloads — loses for **bimodal** (internal frag blocks long requests)
+- paged_16kb rejects **400+ more** requests than contiguous_adaptive_q8 under heavy_mixed load
+- Adaptive compaction: **718 compactions** vs greedy **2422** — 3.4x fewer, fewer rejections
+- Greedy compaction under bimodal load is **worse than no compaction** — serializes the server
+- Compaction pause time = **max 1.6% of server time** — cost is fragmented state, not pause itself
+- **No universal optimal policy** — selection requires knowing the workload size distribution
 
 ---
 
@@ -1208,17 +1233,17 @@ tail perplexity and output distribution.
 
 Each project is independent and fully reproducible.
 Together they cover the full lifecycle of a request in an LLM server:
-from scheduling and caching to memory allocation, compression, prompt compression,
-KV-cache-aware scheduling with output length prediction, chunked prefill under
-memory pressure, multi-turn KV reuse, system prompt caching, KV cache tiering,
-attention sparsity profiling, multi-adapter serving, disaggregated execution,
-multi-instance request routing, SLO-aware autoscaling, cold start profiling, and
-real-trace workload validation, parallelism modeling, kernel-level execution
-optimization including prefill and decode attention kernels, hardware limits,
-long-context extension via RoPE scaling, inference-time scaling, and decoding
-optimization — including linear, tree-based, batched, and draft-selection-guided
-speculative decoding, constrained structured output generation, chain-of-thought
-reasoning, and sampling strategy benchmarking.
+from scheduling and caching to memory allocation, fragmentation dynamics,
+compression, prompt compression, KV-cache-aware scheduling with output length
+prediction, chunked prefill under memory pressure, multi-turn KV reuse, system
+prompt caching, KV cache tiering, attention sparsity profiling, multi-adapter
+serving, disaggregated execution, multi-instance request routing, SLO-aware
+autoscaling, cold start profiling, and real-trace workload validation, parallelism
+modeling, kernel-level execution optimization including prefill and decode attention
+kernels, hardware limits, long-context extension via RoPE scaling, inference-time
+scaling, and decoding optimization — including linear, tree-based, batched, and
+draft-selection-guided speculative decoding, constrained structured output
+generation, chain-of-thought reasoning, and sampling strategy benchmarking.
 
 ---
 
