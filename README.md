@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 52 projects covering the full LLM inference stack —
+> 54 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1033,6 +1033,33 @@ optimal tier policy. Connects four prior KV cache projects.
 - cpu_int8 is **5–6x slower** than cpu_fp16_pinned_pool — INT8 halves size but 5x hurts reload
 - Reuse threshold: **1–2%** — any workload with repeated prompts benefits from CPU tiering
 - No other tier appears in the **optimal policy** at any reuse probability
+
+---
+
+### 🎯 [attention-sink-eviction-policy](https://github.com/JohnScheuer/attention-sink-eviction-policy)
+
+> *Head-structured KV eviction from per-head KL profiles -- does it beat uniform eviction at matched compression?*
+
+Builds and validates head-structured KV cache eviction policies using per-head
+KL divergence profiles from attention-sparsity-bench. Tests the claim that
+structured masks achieve 40-60% KV reduction with near-zero distortion.
+Closes a four-part arc with attention-sparsity-bench, kv-cache-eviction-benchmark,
+and mixed-precision-kv-policy.
+
+| | |
+|---|---|
+| Stack | Python - PyTorch - Transformers |
+| Method | Per-head keep_frac assignment - KL bucket mapping - Pareto frontier - budget-matched comparison |
+| Hardware | NVIDIA RTX 2070 (8.6 GB) |
+
+**Key findings:**
+- kl_conservative: **57% reduction** at KL=0.032 vs uniform_50: 50% reduction at KL=0.113 -- **3.5x better**
+- kl_moderate at keep=42%: **4.2x lower KL** than budget-matched uniform eviction
+- Pattern-based labels **worse than KL scores** -- pattern_structured KL=0.290 vs kl_structured KL=0.098 at same ratio
+- Structured advantage **largest at short prompts**: KL gain +0.120 at 128 tokens, +0.045 at 512 tokens
+- Profile computed **once, applied universally** -- Jaccard 98.6% means same mask works across all domains
+- Continuous KL score contains **more information than discrete pattern label** -- use KL for assignment
+- Claim from attention-sparsity-bench **validated**: 40-60% reduction with near-zero distortion achievable
 
 ---
 
