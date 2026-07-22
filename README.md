@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 57 projects covering the full LLM inference stack —
+> 58 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -451,6 +451,31 @@ sensitivity to isolate kernel launch and runtime dispatch overhead.
 - StaticCache is **slower** than DynamicCache in eager mode — speedup only materializes with graph capture
 - Graph benefit is largest at **small batch sizes** — shrinks as compute dominates launch overhead
 - Production systems (vLLM, TensorRT-LLM, SGLang) use compile + graph together — neither alone is sufficient
+
+---
+
+### 💾 [speculative-decoding-kv-overhead-bench](https://github.com/JohnScheuer/speculative-decoding-kv-overhead-bench)
+
+> *Does temporary draft KV allocation turn speculative decoding into a scheduling problem near the memory admission limit?*
+
+Event-driven simulation of temporary KV cache overhead from speculative decoding
+across 2,400 configurations (2 models, 5 workloads, 4 KV budget factors, 3 alpha
+values, 5 gamma values, 4 scheduler policies). Measures rejection penalty from
+peak vs expected reservation and gamma optimum shifts under memory pressure.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · FIFO admission · pairwise KV penalty analysis · budget factor sweep |
+
+**Key findings:**
+- Average draft KV overhead is small but **threshold impact is disproportionately large** near admission cliff
+- Peak reservation: **+287 rejections** vs oracle — expected reservation: **+76 rejections** at gamma=16
+- **Expected reservation is the safer default**: reserves round(alpha×gamma) not gamma extra slots
+- Optimal gamma **rarely shifts** under KV pressure — but throughput at that gamma **degrades**
+- Larger models and **long contexts amplify** the effect — heavy_long_context exposes cliff most clearly
+- Speculative decoding gamma depends on **alpha, decode speed, context length, burstiness, AND KV headroom**
+- Even gamma=4 at alpha=0.80 incurs measurable KV tax when steady-state KV leaves little headroom
 
 ---
 
