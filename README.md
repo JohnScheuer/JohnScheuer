@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 58 projects covering the full LLM inference stack —
+> 59 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -402,6 +402,31 @@ prompt lengths, and two batch sizes.
 - TTFT penalty **grows with prompt length** — longer prompts amplify the interference effect
 - Larger models show **severely worse pollution** — 1.5B prompt=256: **1.74x** inflation vs 0.5B **1.19x**
 - Grounds disaggregated-prefill-decode-sim: analytical 10.76x gain now backed by real interference data
+
+---
+
+### 📤 [prefix-sharing-disaggregated-bench](https://github.com/JohnScheuer/prefix-sharing-disaggregated-bench)
+
+> *When prefill and decode run on separate nodes, how should prefix KV reach the decode node?*
+
+Simulation comparing four prefix KV sharing strategies (transfer_per_request,
+recompute_on_decode, replicate_hotset, replicate_all_lru) across 384 runs —
+2 models, 4 workloads, 4 budget factors, 3 seeds. Closes a three-part arc with
+disaggregated-prefill-decode-sim and system-prompt-cache-bench.
+
+| | |
+|---|---|
+| Stack | Python · NumPy · Pandas · Matplotlib |
+| Method | Discrete-event simulation · replica LRU cache · admission cliff analysis · crossover detection |
+
+**Key findings:**
+- replicate_all_lru: **-43% TTFT** in relaxed regime, **-69%** best case (enterprise_hotset, budget=1.0)
+- replicate_hotset: **best operational compromise** — 24% TTFT reduction at 30% less replica memory
+- Transfer vs recompute is **model-dependent**: 0.5B → recompute wins everywhere, 1.5B → transfer wins
+- Tight budgets (factor=0.35): **all policies converge** — raw headroom matters more than strategy
+- Recommendation across 128 scenarios: replicate_all_lru **24**, recompute **7**, transfer **1**
+- Replication amortizes initial cost to **near zero per request** under repeated system prompts
+- Crossover depends on **compute/transfer cost ratio** — must be calibrated per model and interconnect
 
 ---
 
