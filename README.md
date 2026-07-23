@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 59 projects covering the full LLM inference stack —
+> 60 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -123,6 +123,33 @@ misses and the tradeoff between cache locality and load balance.
 - Routing misses **compound over turns** — a miss at turn 2 permanently destroys accumulated locality
 - Routing is a **multi-objective problem** — no single strategy dominates all metrics simultaneously
 - Reuse benefit is **front-loaded**: largest relative gain at turn 1, diminishing returns beyond turn 5
+
+---
+
+### 🧵 [radix-attention-sim](https://github.com/JohnScheuer/radix-attention-sim)
+
+> *How much KV cache is saved when concurrent requests share physical prefix blocks -- and does scheduler accuracy determine the outcome?*
+
+Event-driven simulation of concurrent KV cache prefix sharing inspired by
+RadixAttention. Measures physical KV savings, fanout saturation, copy-on-write
+overhead, and scheduler accuracy impact across 8 workloads, 4 policies, 4 budget
+factors, and 2 models. Closes a four-part arc with prefix-cache-sim,
+system-prompt-cache-bench, and paged-attention-sim.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Concurrent block sharing - physical KV accounting - COW tracking - fanout/TTL sweep |
+
+**Key findings:**
+- Concurrent prefix sharing saves **45-74%** of physical KV in system-prompt-heavy workloads
+- Fanout **saturates at N=8** -- N=2 already captures most of the gain, N=16+ adds marginal benefit
+- **50% overlap** captures ~95% of identical-prompt savings -- exact match not required
+- Active sharing = **90%+ of reuse** -- warm prefix hits contribute only 5-15%
+- Exact physical-KV-aware scheduler **consistently beats** approximate schedulers
+- Physical sharing alone is not enough -- **scheduler must track marginal block cost** per request
+- COW is **predictable**: aligned prefixes = zero COW, unaligned = deterministic COW
+- Radix attention is a **memory scheduling problem**, not only a cache reuse mechanism
 
 ---
 
