@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 60 projects covering the full LLM inference stack —
+> 61 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -999,6 +999,32 @@ decode throughput, and output fidelity via weight-collapsing proxy.
 - MQA reduces KV-cache by **92%** but drops cosine similarity to **0.269**
 - GQA-g2 halves KV-cache while preserving **~70%** fidelity — the industry sweet spot
 - Decode throughput differs by only ~10–20% across variants
+
+---
+
+### 📦 [adaptive-batching-policy-bench](https://github.com/JohnScheuer/adaptive-batching-policy-bench)
+
+> *How should batches be composed when prefill and decode compete for the same step?*
+
+Event-driven benchmark comparing three batch composition policies (prefill_first,
+decode_first, balanced_chunks) across 5 workloads, 3 memory pressure regimes,
+and 2 models. Measures p99 TTFT, TPOT, and throughput under realistic
+prefill-decode interference. Connects prefill-decode-interference-bench and
+sharegpt-workload-bench.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Step-cost model - batch composition sweep - chunk size sensitivity - pairwise analysis |
+
+**Key findings:**
+- decode_first reduces p99 TTFT by up to **28%** in interactive workloads under pressure
+- balanced_chunks is the **most robust policy** -- never loses significantly, safest production default
+- prefill_first is the **worst under high pressure** -- only wins in low-pressure regimes
+- Optimal policy is **regime-dependent**: interactive+pressure=decode_first, mixed=balanced_chunks
+- **Policy choice dominates chunk size** -- right policy matters more than right chunk size
+- Step cost = **max(prefill, decode)** -- one long prefill serializes the entire batch
+- Effect is **stronger on larger models** -- 1.5B enters pressure earlier due to higher KV bytes/token
 
 ---
 
