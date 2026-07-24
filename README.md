@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 61 projects covering the full LLM inference stack —
+> 62 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -195,6 +195,31 @@ startup_delay parameters in real measurements.
 - Cold start multiplier: **68x** warmed TTFT for GPT-2 — 400x+ at 7B scale
 - Extrapolated cold start: 7B=**~20s**, 13B=**~37s**, 70B=**~200s** without warm pool
 - Autoscaling startup delays now grounded: 5s=GPU warm, 15s=CPU RAM, 30s=7B disk, 60s=13B disk
+
+---
+
+### 👥 [multi-tenant-serving-bench](https://github.com/JohnScheuer/multi-tenant-serving-bench)
+
+> *How do you share LLM serving infrastructure between tenants with different SLOs without noisy neighbor degradation?*
+
+Event-driven benchmark of per-tenant KV cache isolation policies (global_fcfs,
+hard_quota, soft_quota_borrow, priority_reclaim) across 5 workloads and 3 tenants
+with different priorities and SLO requirements. Measures SLO compliance, Jain
+fairness, and reclaim stability under simultaneous bursts.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Per-tenant KV quota tracking - borrow/reclaim events - SLO compliance sweep - fairness index |
+
+**Key findings:**
+- **No single policy** satisfies all tenant SLOs simultaneously -- every policy protects a different subset
+- hard_quota reduces tenant_A violations from **82% to <1%** under noisy_neighbor -- at cost of tenant_B
+- priority_reclaim: p99 TTFT reaches **470,000ms** under simultaneous bursts -- reclaim livelock
+- priority_reclaim requires **minimum capacity floor** per tenant to prevent eviction-retry cascade
+- soft_quota: high Jain fairness but **low real isolation** -- borrowed capacity flows to best-effort
+- global_fcfs: **zero SLO compliance** for tenant_A and B across all configurations
+- Production recommendation: **hard_quota as baseline** + priority_reclaim only above minimum floor
 
 ---
 
