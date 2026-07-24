@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 63 projects covering the full LLM inference stack —
+> 64 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -123,6 +123,31 @@ misses and the tradeoff between cache locality and load balance.
 - Routing misses **compound over turns** — a miss at turn 2 permanently destroys accumulated locality
 - Routing is a **multi-objective problem** — no single strategy dominates all metrics simultaneously
 - Reuse benefit is **front-loaded**: largest relative gain at turn 1, diminishing returns beyond turn 5
+
+---
+
+### 🔄 [request-reordering-cache-bench](https://github.com/JohnScheuer/request-reordering-cache-bench)
+
+> *When is it worthwhile to delay requests to group same-prefix batches for concurrent KV sharing?*
+
+Event-driven benchmark of prefix-aware request reordering policies (fcfs,
+prefix_window, eager_threshold) across 7 workloads, 2 models, and variable
+arrival rates. Measures ROI = avg_saved_prefill_ms / avg_wait_ms as the
+primary decision criterion. Closes the loop opened by radix-attention-sim.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Per-prefix bucket grouping - ROI analysis - window/threshold sweep - arrival rate sensitivity |
+
+**Key findings:**
+- ROI-positive only in **high-traffic concentrated workloads**: bursty_hotset ROI=9.5-15.2, ultra_hot ROI=13-21
+- Arrival rate is the **dominant factor**: 4 req/s ROI=0.54, 20 req/s ROI=10.3 (same 2-prefix workload)
+- Practical rule: reorder when **arrivals_per_prefix > 1/window_ms**
+- Prefix length breakeven: **64-256 tokens** for 0.5B, lower for 1.5B
+- Larger models justify reordering **1.5-1.6x more** -- prefill cost scales with KV bytes/token
+- Window and threshold policies **functionally equivalent** -- window simpler, no threshold tuning
+- Diminishing returns beyond **25-50ms** -- first 5ms captures best-quality groupings
 
 ---
 
