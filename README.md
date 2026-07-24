@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 64 projects covering the full LLM inference stack —
+> 65 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -319,6 +319,31 @@ optimal routing policy under realistic serving conditions.
 - prefix_aware at high skew: imbalance=**0.856** — traffic concentrates, TTFT collapses to **280.3ms**
 - Round-robin and least-load are **equivalent** under homogeneous instances — routing intelligence only pays with skewed workloads
 - Cache locality and load balance are **not fundamentally in conflict** — a single queue-depth threshold resolves both
+
+---
+
+### 🔮 [speculative-prefill-bench](https://github.com/JohnScheuer/speculative-prefill-bench)
+
+> *Can you prefill the next user turn speculatively during reading time -- and when does it go net-negative?*
+
+Event-driven benchmark of speculative prefill during user idle time across 4
+gating policies (no_spec, eager, confidence_gated, read_time_aware), 9 workloads,
+and 2 models. Measures net_benefit_per_turn = saved_ttft - contention - wasted_ms.
+Identifies the first regime where speculation is reliably harmful.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Idle window estimation - spec_too_slow tracking - contention penalty - ROI per turn |
+
+**Key findings:**
+- eager speculation goes **net-negative** at 20% accuracy in fast-turn workloads (-3.6ms/turn)
+- read_time_aware: **spec_too_slow_frac = 0.0%** across all workloads -- never starts uncompletable speculation
+- Net benefit scales with idle window: voice=3-15ms, chat=14-25ms, document=**135-220ms** per turn
+- Tipping point is **not a fixed accuracy threshold** -- idle-to-cost ratio and capacity fraction jointly determine ROI
+- Confidence gating beats read_time_aware under **high contention** (capacity_frac >= 0.50)
+- Larger models fail earlier: 1.5B reaches spec_too_slow=**3.2%** in interruptive workloads at alpha=0.80
+- read_time_aware is the **most robust default** -- positive net benefit in every tested regime
 
 ---
 
