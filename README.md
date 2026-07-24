@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 62 projects covering the full LLM inference stack —
+> 63 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -169,6 +169,31 @@ A RadixTree-based prefix cache simulator with four eviction policies:
 - LFU dominates in small caches with skewed (Zipf) workloads
 - Multi-turn sessions push hit rate to 60%+
 - SizeLRU degrades with high alpha — blocks eviction of large nodes
+
+---
+
+### 📦 [online-kv-migration-bench](https://github.com/JohnScheuer/online-kv-migration-bench)
+
+> *When an autoscaler removes a serving instance, how do you migrate active decode sessions without dropping requests?*
+
+Event-driven benchmark of five KV cache migration policies (kill, drain,
+checkpoint_restore, live_migration, hybrid) across workload types and concurrent
+session counts. Separates linger (time until instance removed) from user-visible
+pause — two metrics often conflated in scale-down discussions.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Per-session KV transfer model - PCIe serialization - parallel migration - linger/pause tradeoff |
+
+**Key findings:**
+- kill at N=100: **86% session drop rate** -- never acceptable in SLO-bearing workloads
+- checkpoint_restore: linger **O(1) in session count** -- 200-240ms regardless of N (parallel)
+- live_migration: user pause **~50ms** but linger grows linearly -- N=50 exceeds checkpoint at 210ms
+- **Crossover at N~50**: below=live_migration wins, above=checkpoint_restore wins on linger
+- drain: **zero user pause** but linger up to 63s for long sessions -- only with tolerable linger cost
+- Long sessions or high concurrency: **checkpoint_restore** -- parallel migration bounds linger
+- Short sessions at low concurrency: **live_migration** -- minimal user pause and low linger
 
 ---
 
