@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 65 projects covering the full LLM inference stack —
+> 66 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -369,6 +369,30 @@ kv-cache-aware-scheduler.
 - mean_only → noisy_30: **+36%** — noisy_30 → oracle: **+2.3%** — returns are heavily front-loaded
 - Raw prediction accuracy and **scheduling calibration are separate concerns**
 - Engineering priority: build any calibrated predictor first — refinement yields diminishing returns
+
+---
+
+### 📡 [admission-pressure-predictor-bench](https://github.com/JohnScheuer/admission-pressure-predictor-bench)
+
+> *Can KV cache admission pressure be predicted before rejections occur -- and does more lead time mean fewer rejections?*
+
+Event-driven benchmark of predictive admission pressure control across 5 prediction
+policies, 7 workloads, and 2 models. ISO action experiment isolates prediction
+timing from mitigation intensity to identify the real bottleneck.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Growth-rate projection - rollout estimation - ISO action experiment - lead time vs rejection analysis |
+
+**Key findings:**
+- Growth-rate and hybrid predictors achieve **2.5-5.5s lead time** before first KV rejection
+- All predictors substantially reduce rejections vs reactive -- **queue reordering** is most impactful mitigation
+- **More lead time does not mean fewer rejections** -- current_state_only outperforms predictors with 5s lead time
+- Acting too early with fixed intensity **increases queueing pressure** before cliff and reduces throughput
+- Bottleneck is **mitigation quality, not prediction timing** -- action strength must scale with pressure score
+- Fixed headroom applied too early performs **worse than reactive** threshold on current state
+- Predictive control beats reactive only when **mitigation intensity is proportional** to predicted pressure
 
 ---
 
