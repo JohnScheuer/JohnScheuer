@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 68 projects covering the full LLM inference stack —
+> 69 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1148,6 +1148,31 @@ decode throughput, and output fidelity via weight-collapsing proxy.
 - MQA reduces KV-cache by **92%** but drops cosine similarity to **0.269**
 - GQA-g2 halves KV-cache while preserving **~70%** fidelity — the industry sweet spot
 - Decode throughput differs by only ~10–20% across variants
+
+---
+
+### 🧱 [sequence-packing-bench](https://github.com/JohnScheuer/sequence-packing-bench)
+
+> *How much compute is wasted on padding in realistic LLM traffic -- and how much can packing recover?*
+
+Benchmark of sequence packing and length-aware batching across offline (naive,
+sorted, bucketed, best-fit) and online policies under variable-length workloads.
+Measures padding waste, packing efficiency, and TTFT cost of grouping delays.
+Introduces CV-based policy selection rule.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Offline packing algorithms - online scheduler with wait timeout - efficiency vs TTFT tradeoff |
+
+**Key findings:**
+- ShareGPT traffic: **87.2% padding waste** at batch=32 -- only 12.8% real computation
+- Offline sorted padding: **98-99% efficiency** -- theoretical upper bound, requires future knowledge
+- bucketed_online: **95% efficiency** at +300-420ms p99 TTFT -- best practical policy for CV > 1.5
+- Online best-fit packing **collapses under heavy-tail** -- oversize sequences force singleton fallback
+- uniform_short: bucketed_online **worse than naive** on both efficiency and TTFT -- packing is not universal
+- CV-based rule: CV<0.5 = naive, CV 0.5-1.5 = bucketed, **CV>1.5 = bucketed online with timeout**
+- Never use online best-fit packing under **heavy-tail traffic**
 
 ---
 
