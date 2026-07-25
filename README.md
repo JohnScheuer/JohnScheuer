@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 69 projects covering the full LLM inference stack —
+> 70 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1359,6 +1359,32 @@ Closes a loop with kv-cache-tiering-bench and multi-turn-kv-reuse-bench.
 - confidence_05 is the **best practical policy**: p(next_turn) >= 0.50 threshold, robust across model sizes
 - Size normalization must use **reload_cost in numerator**, not raw MB in denominator
 - Prefetch buffer design: **confidence threshold as gate**, size as tiebreaker for capacity limits
+
+---
+
+### 🧪 [kv-cache-compression-pipeline-bench](https://github.com/JohnScheuer/kv-cache-compression-pipeline-bench)
+
+> *Which ordered pipeline of quantization, eviction, and tiering gives the best KV memory vs quality tradeoff?*
+
+Calibrated simulation benchmark evaluating nine KV cache compression pipeline
+families across 6 workload regimes. Measures stage activation thresholds, wasted
+quantization, future reload cost, and regime-dependent pipeline ranking. Closes
+a five-project arc on KV compression techniques.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Region-based KV model - stage activation tracking - wasted quant analysis - decision map |
+
+**Key findings:**
+- **No pipeline is universally optimal** -- best pipeline is regime-dependent
+- compress-before-move is a **robust rule**: quantize_then_tier consistently beats tier_only
+- Stage activation: quantization alone often makes eviction a **no-op** in normal-pressure workloads
+- Wasted quantization: quantize-first wastes **23-36%** of work under extreme overpressure
+- Evict-first avoids waste but creates **future recompute penalty** -- not a free win
+- Light/long-context: **evict_then_mixed_then_tier** -- cold regions are cheap to remove first
+- Heavy/reuse-heavy: **mixed_then_evict_then_tier** -- compress first, then evict selectively
+- Practical default: **quantize_then_tier** -- strong baseline when simplicity matters
 
 ---
 
