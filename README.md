@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 66 projects covering the full LLM inference stack —
+> 67 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1568,6 +1568,31 @@ Benchmark comparing three LLM serving strategies on identical hardware:
 - Batched server maintains 7–9ms TTFT regardless of concurrency
 - Batched reaches 4521 tok/s at concurrency=32 — 25.8× single-request throughput
 - KV-cache value only materializes when combined with batching
+
+---
+
+### 🎮 [dynamic-batch-size-controller](https://github.com/JohnScheuer/dynamic-batch-size-controller)
+
+> *How should batch size adapt in real time to balance GPU utilization and TTFT SLO under variable load?*
+
+Event-driven benchmark of six batch size controllers (fixed, queue_reactive,
+latency_target, util_aware, bang_bang, hybrid) across 5 workloads and 2 models.
+Measures throughput vs SLO Pareto frontier and identifies why utilization-aware
+control collapses to minimum batch.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Tick-level batch adaptation - Pareto frontier - controller stability analysis - pairwise comparison |
+
+**Key findings:**
+- Fixed batch size **never globally optimal** -- dominated in throughput or SLO in every workload
+- bang_bang: **3.88 req/s** on ramp_up vs fixed_16 **2.45 req/s** -- asymmetric design prevents thrashing
+- latency_target: **3-4% SLO violations** vs fixed_16 **65%** in bursty workloads
+- util_aware **collapses to minimum batch** -- utilization alone is insufficient feedback without adaptive recovery
+- Throughput vs SLO forms a **true Pareto frontier** -- no single policy dominates all metrics
+- bang_bang design: **fast scale-up, slow scale-down** -- same intuition as TCP congestion control
+- Hybrid controller: weighted signals do not outperform simpler bang_bang in any tested workload
 
 ---
 
