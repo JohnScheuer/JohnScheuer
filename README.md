@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 70 projects covering the full LLM inference stack —
+> 71 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1603,6 +1603,31 @@ on GPT-2 and GPT-2-medium, with batch size sweep and perplexity tracking.
 - INT4 reduces model memory by 76–82% with perplexity delta < 0.003
 - On Turing-class GPUs, bitsandbytes quantization hurts decode throughput
 - The value of INT4/INT8 here is capacity, not speed
+
+---
+
+### 🚦 [model-routing-complexity-bench](https://github.com/JohnScheuer/model-routing-complexity-bench)
+
+> *Given an incoming request, which model should serve it -- and which routing signal best decides?*
+
+Calibrated simulation benchmark for real-time complexity-based routing between
+small and large models. Compares 7 policies (length, perplexity, confidence,
+perplexity+length, oracle) across 6 workloads using a matched random control to
+isolate selection quality from offload volume.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Matched random control (30 trials) - quality budget analysis - hard misroute tracking - decision map |
+
+**Key findings:**
+- perplexity_length_router is the **best deployable policy** in all 6 workloads
+- Smart routing: **10-18 score points above random** at matched offload volume -- selection quality matters
+- length_based_router: **catastrophically unreliable** -- sends 100% of hard requests to small model in 4/6 workloads
+- 3% quality budget: **23-56% cost savings** safely achievable across all workloads
+- 5% quality budget: savings reach **37-72%** depending on workload mix
+- Decode dominates cost at **82-91%** -- routing savings largest for easy requests with long outputs
+- Optimal signal: **perplexity + output_length penalty** -- difficulty alone misses the cost dimension
 
 ---
 
