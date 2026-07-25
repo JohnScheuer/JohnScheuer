@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 67 projects covering the full LLM inference stack —
+> 68 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -797,6 +797,31 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 - Single link for portfolio presentation
 - Side-by-side simulation vs. real hardware comparison
 - Interactive charts — no installation required
+
+---
+
+### 📺 [token-streaming-latency-bench](https://github.com/JohnScheuer/token-streaming-latency-bench)
+
+> *How does flush policy affect perceived streaming quality -- and does server batch size matter at all?*
+
+Benchmark of nine token streaming flush policies (timer, token-count, semantic,
+render-frame-aware) across 8 workloads. Introduces SPIS-R (readable-aware
+streaming score) as a more complete user-facing metric than cadence-only SPIS.
+Full pipeline modeled: SSE framing, network jitter, 60 FPS render coalescing.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | SSE pipeline simulation - SPIS/SPIS-R scoring - word-boundary tracking - batch size isolation |
+
+**Key findings:**
+- timer_50ms: SPIS **99.5-99.9**, SPIS-R **97-99** -- best universal policy across all workloads
+- Flush policy differences: **20-40 SPIS points** -- batch size difference: **<1 point**
+- Streaming UX is controlled by **flush policy, not server batch size**
+- word_boundary_50ms: midword fraction **0.19-0.21** vs timer **0.38-0.40** -- readability at TTI cost
+- Subword tokenization: midword fraction **0.60-0.80** regardless of policy -- bottleneck at tokenizer
+- timer_100ms beats timer_50ms in **code workloads** -- longer intervals improve word-boundary alignment
+- Never use tokens_16 or end_of_response for **interactive applications**
 
 ---
 
