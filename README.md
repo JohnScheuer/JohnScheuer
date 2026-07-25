@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 71 projects covering the full LLM inference stack —
+> 72 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -797,6 +797,31 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 - Single link for portfolio presentation
 - Side-by-side simulation vs. real hardware comparison
 - Interactive charts — no installation required
+
+---
+
+### ❌ [request-cancellation-overhead-bench](https://github.com/JohnScheuer/request-cancellation-overhead-bench)
+
+> *When a user cancels a streaming request, how much compute is wasted -- and how fast does the server recover?*
+
+Discrete-event simulation of 8 cancellation handling policies (push, poll_1/2/4/8,
+lazy_kv, no_repack, no_handling) across 6 workloads including high-cancel,
+KV-pressure, and bursty disconnect scenarios. Isolates stop-decode, KV-free, and
+batch-repack effects independently.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Per-token cancel detection - effect isolation - ROI vs cancel rate sweep - polling frontier |
+
+**Key findings:**
+- Survivor p95 completion time improves **250-1,550ms** in high-cancel workloads via batch compaction
+- Polling overhead: **<0.4%** of benefit at all intervals -- real cost is post-cancel decode waste
+- poll_every_4 closes **96%** of push-detection gap at 0.10% overhead -- best polling fallback
+- Delayed KV cleanup strands **450-2,691 request-ms** of capacity -- free KV immediately after cancel
+- Every policy pays off at **6% cancel rate** -- choice affects magnitude, not whether there is benefit
+- ROI scales **linearly with cancel rate**: 35% cancel = 3,887 push score vs 659 at 6%
+- Long-output workloads **amplify all effects** -- decode dominates, wasted tokens accumulate
 
 ---
 
