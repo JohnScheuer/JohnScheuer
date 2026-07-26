@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 75 projects covering the full LLM inference stack —
+> 76 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1729,6 +1729,31 @@ isolate selection quality from offload volume.
 - 5% quality budget: savings reach **37-72%** depending on workload mix
 - Decode dominates cost at **82-91%** -- routing savings largest for easy requests with long outputs
 - Optimal signal: **perplexity + output_length penalty** -- difficulty alone misses the cost dimension
+
+---
+
+### 🗺️ [capacity-planning-sim](https://github.com/JohnScheuer/capacity-planning-sim)
+
+> *How many GPUs do you need to serve X req/s with p99 TTFT < 500ms -- integrating 40+ prior benchmarks?*
+
+Discrete-event simulation for LLM serving capacity planning. Integrates measured
+parameters from disaggregated-prefill-decode-sim, continuous-batching-fragmentation-sim,
+slo-aware-autoscaling-sim, sharegpt-workload-bench, and serving-cost-model-v2 into
+a single GPU fleet sizing and cost model.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Latency cliff analysis - three planning levels - policy role taxonomy - sensitivity sweep |
+
+**Key findings:**
+- Latency cliff: GPU 3→4 recovers **-8,245ms** of p99 TTFT, GPU 7→8 recovers **<11ms**
+- Conservative plan leaves only **3.75ms headroom** -- one extra GPU buys **172ms** at +$500/month
+- Robust planning (all seeds + 50ms headroom) is the **production recommendation**
+- Scheduled scaling saves **36% monthly cost** vs static -- but does not reduce peak fleet size
+- Reactive autoscaling with 35s startup delay **over-provisions** vs scheduled scaling
+- Under constant high load **all policies converge** -- dynamic scaling offers no advantage
+- headroom_ms is the **correct operational signal** -- not p99 TTFT alone
 
 ---
 
