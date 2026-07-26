@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 72 projects covering the full LLM inference stack —
+> 73 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -219,6 +219,31 @@ pause — two metrics often conflated in scale-down discussions.
 - drain: **zero user pause** but linger up to 63s for long sessions -- only with tolerable linger cost
 - Long sessions or high concurrency: **checkpoint_restore** -- parallel migration bounds linger
 - Short sessions at low concurrency: **live_migration** -- minimal user pause and low linger
+
+---
+
+### 🔥 [cache-warming-strategy-bench](https://github.com/JohnScheuer/cache-warming-strategy-bench)
+
+> *How do you warm the KV cache of a cold server before it receives real traffic -- and how fast can it reach steady-state hit rate?*
+
+Benchmark of 6 KV cache warming strategies (cold_start, top_k_prompts,
+top_k_adaptive, top_k_adaptive_reserve, replay_last_n, progressive_warming)
+across 2 models, 4 workloads, and 3 seeds. Measures TTFT, hit rate, and
+time-to-steady-state. Closes the gap left by model-cold-start-bench.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Discrete-event simulation - time-to-steady tracking - budget utilization - warming cost analysis |
+
+**Key findings:**
+- Cold start degrades TTFT for **33-68 seconds** -- adaptive warming compresses to **1,000-10,000ms**
+- top_k_adaptive_reserve: mean TTFT **11.5ms** vs cold_start **50.3ms** -- **77.2% reduction**
+- Reserving 20% budget for online learning beats full-fill in **7 of 8 scenarios**
+- top_k_prompts fails in diverse workloads: uses only **24-40% of budget**, 52% hit rate
+- Concentrated workloads: autoscale_spike achieves **92.1% TTFT reduction** with progressive_warming
+- Warming compute cost: **always under 270ms** -- zero SLO violations in any strategy
+- Default: **top_k_adaptive_reserve** -- if distribution unknown: **progressive_warming**
 
 ---
 
