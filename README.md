@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 73 projects covering the full LLM inference stack —
+> 74 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -270,6 +270,32 @@ startup_delay parameters in real measurements.
 - Cold start multiplier: **68x** warmed TTFT for GPT-2 — 400x+ at 7B scale
 - Extrapolated cold start: 7B=**~20s**, 13B=**~37s**, 70B=**~200s** without warm pool
 - Autoscaling startup delays now grounded: 5s=GPU warm, 15s=CPU RAM, 30s=7B disk, 60s=13B disk
+
+---
+
+### 🛙 [graceful-degradation-bench](https://github.com/JohnScheuer/graceful-degradation-bench)
+
+> *When the server is overloaded, which degradation ladder -- output budget cut, CoT disable, model downgrade, selective drop -- beats rejection-only?*
+
+Discrete-event simulation of 6 degradation policies (no_degradation,
+conservative_late, fixed_threshold_ladder, aggressive_early, tenant_aware,
+oracle_optimal) across 5 workloads. Measures composite serving score, SLO
+headroom, and quality-adjusted goodput. Closes a loop with multi-tenant-serving-bench
+and admission-pressure-predictor-bench.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | 4-level degradation ladder - pressure threshold sweep - SLO headroom analysis - oracle comparison |
+
+**Key findings:**
+- aggressive_early beats rejection-only by **16-38%** in composite score across all workloads
+- aggressive_early is the **best deployable policy in all 5 workloads** -- gap never a near-tie
+- Graceful degradation creates **65% more premium SLO headroom** vs no_degradation (660ms vs 399ms)
+- All degradation policies satisfy SLO **even under sustained overload** -- degradation reduces service time
+- Oracle gains come from **quality preservation**, not serving more requests
+- conservative_late fails: waits until **queue is already built** before engaging level 1
+- Degrade **before the cliff** -- not after rejections have already started
 
 ---
 
