@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 80 projects covering the full LLM inference stack —
+> 81 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -507,6 +507,31 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 - Single link for portfolio presentation
 - Side-by-side simulation vs. real hardware comparison
 - Interactive charts — recrutadores não precisam instalar nada
+
+---
+
+### 🛠️ [pipeline-parallel-kv-bench](https://github.com/JohnScheuer/pipeline-parallel-kv-bench)
+
+> *With pipeline parallelism, each stage has an independent KV cache -- how does PP degree change disaggregation, prefix sharing, and tiering?*
+
+Analytical benchmark connecting PP degree to KV layout, disaggregation bubble
+overlap, prefix reuse tax, and tiering coordination overhead. Calibrated from
+comm-cost-modeling and tensor-parallel-kv-cache-bench. Closes the PP side of
+the parallelism + KV cache gap.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Bubble overlap model - contiguous prefix hit probability - tiering coordination - overestimate analysis |
+
+**Key findings:**
+- NVLink PP=4: KV transfer **fully hidden in bubble time** for 70B models -- zero net disagg cost
+- PCIe: only **10-26% of transfer absorbed** by bubble at PP=8 -- always a blocker
+- Prefix reuse tax: PP=8 at h=0.5 collapses savings from **50% to 12.5%**
+- Naive independent-hit model **overestimates savings by 3-6x** -- contiguous model is correct
+- Tiering: **PP=4 is optimal** -- PP=8 reverses speedup for smaller models via coordination overhead
+- **PP=4 is the sweet spot**: zero disagg cost, acceptable prefix tax, positive tiering gain
+- Prefix sharing critical: prefer **PP=1-2** -- PP=4+ imposes large reuse tax
 
 ---
 
