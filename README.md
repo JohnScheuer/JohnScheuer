@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 82 projects covering the full LLM inference stack —
+> 83 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -54,6 +54,32 @@ paged-attention-sim, and kv-cache-tiering-bench.
 - Greedy compaction under bimodal load is **worse than no compaction** — serializes the server
 - Compaction pause time = **max 1.6% of server time** — cost is fragmented state, not pause itself
 - **No universal optimal policy** — selection requires knowing the workload size distribution
+
+---
+
+### 🧰 [llm-fusion-compiler](https://github.com/JohnScheuer/llm-fusion-compiler)
+
+> *Compiler MVP: IR graph -> pattern fusion -> CUDA codegen -> nvcc compile -> GPU execute -> validate*
+
+Compiler that detects fusion patterns in Transformer operations, generates
+optimized CUDA kernels via Jinja2 templates with WMMA API, compiles with nvcc,
+and executes on real GPU hardware. 9 fusion patterns, 39 tests, auto-tuner with
+persistent cache. The most technically differentiated project in the portfolio.
+
+| | |
+|---|---|
+| Stack | Python - CUDA - Jinja2 - WMMA API - nvcc - ctypes |
+| Method | IR + pattern matcher + codegen + nvcc wrapper + grid search auto-tuner |
+| Hardware | NVIDIA RTX 2070 (SM75 Turing) |
+
+**Key findings:**
+- Generated fused GEMM+Bias+GeLU kernel achieves **10.5 TFLOPs** (36.7% of SM75 peak)
+- Vectorized float4 loads: **3.50x** speedup over scalar loads -- memory load efficiency dominates on Turing
+- Correctness validated against PyTorch at all shapes: max error **0.004**
+- 9 fusion patterns: gemm_bias_gelu, gemm_bias_silu, gemm_bias_relu, gemm_bias, gemm_bias_residual, gemm_gelu, gemm_silu, layernorm_gemm, rmsnorm_gemm
+- FFN SwiGLU block: 7 IR ops -> 4 fused ops -> 2 compiled CUDA kernels
+- 39 tests across 6 suites -- IR, fusion, codegen, tuner, correctness, pipeline
+- Not a simulation: **real CUDA kernels** compiled and executed on real GPU
 
 ---
 
