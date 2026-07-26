@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 81 projects covering the full LLM inference stack —
+> 82 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1065,6 +1065,31 @@ adapter cache eviction, and batch window effects.
 - TTFT is **output-length invariant** — swap happens before first token regardless of decode length
 - Batch window has **diminishing returns beyond 25ms** — gain comes from density, not window width
 - Naive swap never dominates both alternatives simultaneously across any high-pressure scenario
+
+---
+
+### 🧮 [moe-activation-memory-bench](https://github.com/JohnScheuer/moe-activation-memory-bench)
+
+> *In MoE models, expert activation memory is non-deterministic at admission time -- how should the scheduler account for routing skew?*
+
+Monte Carlo simulation benchmark for MoE expert buffer variability and admission
+control under non-deterministic routing. Measures routing skew amplification,
+top_k scaling, and expected-case vs worst-case admission capacity. Closes the
+gap between moe-inference-sim and the KV cache scheduling projects.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Dirichlet routing model - Monte Carlo peak estimation - admission policy comparison - skew sensitivity |
+
+**Key findings:**
+- very_skewed routing amplifies peak expert buffer by **2.2x** -- uniform-calibrated scheduler underestimates by **52%**
+- expected_case admission: **2-3x more requests** than worst_case with **zero overflow**
+- CV stays **constant at 0.26** across all top_k values -- relative variability is proportional, not additive
+- KV cache does **not vary with routing** -- only expert activation buffer is non-deterministic
+- Expected-case must be paired with **routing-skew monitoring** -- silent failure under distribution shift
+- Worst-case reserves capacity for expert combinations with **probability approaching zero**
+- Correction factor is **multiplicative**: scale expected buffer by (1 + skew_factor) on skew detection
 
 ---
 
