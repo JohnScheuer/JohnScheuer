@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 77 projects covering the full LLM inference stack —
+> 78 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1300,6 +1300,31 @@ sharegpt-workload-bench.
 - **Policy choice dominates chunk size** -- right policy matters more than right chunk size
 - Step cost = **max(prefill, decode)** -- one long prefill serializes the entire batch
 - Effect is **stronger on larger models** -- 1.5B enters pressure earlier due to higher KV bytes/token
+
+---
+
+### ⏸️ [decode-preemption-bench](https://github.com/JohnScheuer/decode-preemption-bench)
+
+> *When should the server interrupt a running decode to admit an urgent prefill -- and what does it cost?*
+
+Discrete-event simulation of 7 decode preemption policies (no_preemption,
+oldest_checkpoint/recompute, longest_remaining, best_effort_first,
+kv_pressure, oracle) across 6 workloads. Measures urgent TTFT, checkpoint
+vs recompute breakeven, and per-class SLO fairness.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Per-tick preemption decisions - checkpoint/recompute cost model - urgency-class SLO - fairness ratio |
+
+**Key findings:**
+- Without preemption: urgent p95 TTFT **998ms** -- with any preemption: **<12ms**
+- Checkpoint wins at small KV state (**27ms vs 79ms**) -- recompute wins at large KV (**61ms vs 322ms**)
+- Simple heuristics (oldest_checkpoint) achieve **fairness ratio 1.00** -- oracle degrades standard SLO to **34%**
+- no_preemption is also unfair: **84% urgent SLO, 17% standard SLO** -- fails all classes
+- longest_remaining is **worst strategy** -- targets largest KV states, maximizes checkpoint overhead
+- Preemption improves SLO for **all urgency classes**, not just urgent
+- Default: **oldest_checkpoint** for high-resume, **oldest_recompute** for heavy-tail output
 
 ---
 
