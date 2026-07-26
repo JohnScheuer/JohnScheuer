@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 76 projects covering the full LLM inference stack —
+> 77 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1729,6 +1729,31 @@ isolate selection quality from offload volume.
 - 5% quality budget: savings reach **37-72%** depending on workload mix
 - Decode dominates cost at **82-91%** -- routing savings largest for easy requests with long outputs
 - Optimal signal: **perplexity + output_length penalty** -- difficulty alone misses the cost dimension
+
+---
+
+### 📡 [inference-observability-bench](https://github.com/JohnScheuer/inference-observability-bench)
+
+> *What is the minimum signal set to detect all LLM serving failure modes before SLO violation?*
+
+Observability design benchmark identifying blind spots, lead times, and minimum
+signal bundles for 4 failure modes (kv_cliff, fragmentation_drift, decode_spike,
+prefill_interference) across 8 candidate signals and 6 observability bundles.
+Closes the question left open by 76 prior benchmarks.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Synthetic incident traces - per-signal lead time - greedy set-cover optimizer - blind spot analysis |
+
+**Key findings:**
+- **No single signal** covers all failure modes with useful lead time -- every signal has a blind spot
+- kv_utilization_rate fires **1 second before breach** -- zero useful early warning despite being commonly monitored
+- headroom_ms detects kv_cliff **24 seconds earlier** -- enough for graceful degradation to engage
+- **2 signals** achieve 100% coverage + 100% useful lead time: tpot_p95_ms + queue_depth_growth
+- Latency signals most efficient: tpot_p95_ms and ttft_p99_ms each cover **3 of 4 failure modes**
+- Structural signals are **complementary, not redundant** -- different blind spots require both types
+- Production minimum: **tpot_p95_ms + queue_depth_growth** -- replace kv_utilization_rate alerts
 
 ---
 
