@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 74 projects covering the full LLM inference stack —
+> 75 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -1679,6 +1679,31 @@ on GPT-2 and GPT-2-medium, with batch size sweep and perplexity tracking.
 - INT4 reduces model memory by 76–82% with perplexity delta < 0.003
 - On Turing-class GPUs, bitsandbytes quantization hurts decode throughput
 - The value of INT4/INT8 here is capacity, not speed
+
+---
+
+### 🧪 [model-ab-testing-sim](https://github.com/JohnScheuer/model-ab-testing-sim)
+
+> *Which canary deployment policy best balances safety and rollout progress when replacing one LLM version with another?*
+
+Simulation benchmark for canary deployment strategies across 6 rollout policies
+(instant, no_rollout, fixed_1pct/5pct, progressive, progressive_strict) and 4
+candidate scenarios (good, bad_quality, bad_latency, marginal). Separates safety
+objective from deployment objective with a policy role taxonomy.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Per-request routing - guardrail monitoring - stage log - bad exposure tracking |
+
+**Key findings:**
+- instant_rollout: safety score **22-28** vs canary policies **86-87** -- never use in production
+- Strict progressive: **1.57% bad exposure, 1 hard stop** vs normal **5.1%, 4 retries**
+- Retrying after guardrail failure **multiplies bad exposure** -- one hard stop is strictly better
+- fixed_canary fraction matters less than **whether guardrail fires** -- 1% and 5% near-identical
+- **No universally best policy**: fixed canary contains bad candidates, progressive completes good rollouts
+- Guardrail **calibration is as important as policy** -- marginal regression is a threshold problem
+- Default: **fixed_canary_5pct** for validation, then **progressive_canary_strict** for rollout
 
 ---
 
