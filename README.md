@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 79 projects covering the full LLM inference stack —
+> 80 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -944,6 +944,31 @@ SSE streaming, and async load testing.
 - Streaming reduces TTFT from **89ms → 32ms** (2.8× faster first token)
 - Decode throughput stays at **~41 tok/s** regardless of concurrency
 - TTFT degrades under concurrent streaming without batching
+
+---
+
+### 🖼️ [sliding-window-attention-kv-bench](https://github.com/JohnScheuer/sliding-window-attention-kv-bench)
+
+> *When does a fixed sliding window eliminate KV management overhead entirely -- and when is eviction still necessary?*
+
+Analytical benchmark comparing sliding window attention (SWA) vs KV eviction
+across 4 attention distributions, 6 sequence lengths, and 5 window sizes.
+Measures quality proxy, KV reduction, prefix sharing viability, and SWA vs
+eviction crossover. Connects long-context-benchmark and kv-cache-eviction-benchmark.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Attention mass model - sink penalty - SWA vs eviction dominance - prefix viability boundary |
+
+**Key findings:**
+- local_heavy (code, chat): window=256 achieves **95%+ quality at all seq_lens** -- does not scale with context
+- Sink-heavy models: **irreducible quality ceiling at 84.6%** -- sink tokens slide out of any fixed window
+- KV reduction: window=256 at seq=32K = **99.2% reduction** -- zero overhead vs eviction overhead
+- Prefix sharing breaks **exactly at prefix_len > window_size** -- deterministic, not gradual
+- SWA dominates eviction at **seq>=8K** for local and mixed distributions (50-100% of configs)
+- Sink-preserving eviction is **strictly better than SWA** for sink-heavy models -- content-aware vs positional
+- Avoid SWA for **retrieval and sink-heavy distributions** -- use for code completion and short chat
 
 ---
 
