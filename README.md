@@ -26,7 +26,7 @@ measurable findings, reproducible pipelines, and paper-ready analysis.
 
 ## Portfolio
 
-> 78 projects covering the full LLM inference stack —
+> 79 projects covering the full LLM inference stack —
 > from memory management and scheduling to distributed parallelism,
 > speculative decoding, and long-context serving.
 
@@ -507,6 +507,31 @@ A single Streamlit dashboard aggregating all simulation and profiling results:
 - Single link for portfolio presentation
 - Side-by-side simulation vs. real hardware comparison
 - Interactive charts — recrutadores não precisam instalar nada
+
+---
+
+### 🧩 [tensor-parallel-kv-cache-bench](https://github.com/JohnScheuer/tensor-parallel-kv-cache-bench)
+
+> *How does tensor parallelism change KV cache layout, transfer cost, and prefix sharing efficiency?*
+
+Analytical benchmark connecting TP degree to KV sharding, all-gather cost,
+GQA ceiling, and prefix hit rate degradation. Calibrated from comm-cost-modeling
+and kv-cache-tiering-bench. Closes the gap between the parallelism and KV cache
+sides of the portfolio.
+
+| | |
+|---|---|
+| Stack | Python - NumPy - Pandas - Matplotlib |
+| Method | Alpha-beta transfer model - GQA shard analysis - prefix degradation model - decision matrix |
+
+**Key findings:**
+- NVLink all-gather vs recompute: **1000x cheaper** -- no crossover point, always all-gather
+- PCIe gen4 is a **hard blocker** for TP KV disaggregation -- bus contention exceeds TP=1 at all degrees
+- GQA models have a **hard TP ceiling at n_kv_heads** -- beyond that, some GPUs hold zero KV heads
+- qwen2_0.5b (n_kv_heads=2): **never use TP=4** -- qwen2_7b (n_kv_heads=4): never use TP=8
+- **TP=2 on NVLink** is the safe baseline for any model and interconnect
+- Prefix hit rate degrades as TP exceeds TP=4 due to **eviction inconsistency across shards**
+- TP + KV disaggregation: viable only on **NVLink or InfiniBand**, not PCIe
 
 ---
 
