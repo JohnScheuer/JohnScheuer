@@ -138,17 +138,6 @@ Led backend architecture and GPU infrastructure decisions.
 
 ---
 
-## 📊 GitHub Stats
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=JohnScheuer&show_icons=true&theme=default&count_private=true&hide_border=true&cache_seconds=1800" alt="JohnScheuer's GitHub stats" />
-</p>
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=JohnScheuer&layout=compact&theme=default&hide_border=true&cache_seconds=1800&langs_count=8" alt="Top Languages" />
-</p>
-
----
 
 ## 📬 Connect & Collaborate
 
