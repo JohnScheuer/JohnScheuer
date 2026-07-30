@@ -52,7 +52,7 @@ Building high-performance foundations for Next-Gen AI. Expert in squeezing maxim
 | Layer | Technologies |
 | :--- | :--- |
 | **Silicon & Hardware** | CUDA C++, PTX Assembly, Tensor Cores (WMMA), SIMD, GPU Profiling |
-| **AI Frameworks** | PyTorch, Transformers, PEFT, Tokenizers, Datasets, ONNX |
+| **AI Frameworks** | PyTorch, Transformers, PEFT, Tokenizers, Datasets, ONNX, LangChain |
 | **Distributed & Infra** | NCCL/Gloo, DDP, Tensor Parallelism, Docker Compose, Gunicorn |
 | **Data & Scaling** | Redis (ZSET Rate Limiting), PostgreSQL (ACID), ChromaDB, Prometheus |
 
@@ -60,10 +60,8 @@ Building high-performance foundations for Next-Gen AI. Expert in squeezing maxim
 
 ## 📊 GitHub Stats
 
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=JohnScheuer&show_icons=true&theme=tokyonight&count_private=true" alt="John's Stats" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=JohnScheuer&layout=compact&theme=tokyonight&hide=html,css" alt="Languages" />
-</p>
+![John's GitHub stats](https://github-readme-stats.vercel.app/api?username=JohnScheuer&show_icons=true&theme=tokyonight)  
+![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=JohnScheuer&layout=compact&theme=tokyonight&hide=html,css)
 
 ---
 
