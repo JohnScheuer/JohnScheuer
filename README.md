@@ -22,6 +22,15 @@ Currently based in Curitiba, Brazil (GMT-3). Open to relocation worldwide.
 - Custom Flash Attention, cuBLASLt INT8, CUDA Graphs, Megatron-style TP.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
+### ⚡ paged-attention-runtime
+**PagedAttention from Scratch**
+
+- Custom CUDA implementation of vLLM's core algorithm.
+- **6.3x throughput scaling** at 8 concurrent sequences (1.83M tok/s).
+- **58% memory reduction** with reference-counted prefix sharing.
+- End-to-end Qwen2 integration with logit-level equivalence (< 5e-05 max diff).
+- Block-based KV cache, copy-on-write, GQA-aware attention.
+
 ### ⚡ sm75-tensorcore-microkernel
 **PTX-Level GEMM Engineering**
 
@@ -99,7 +108,7 @@ Currently based in Curitiba, Brazil (GMT-3). Open to relocation worldwide.
 | **Compilers & Codegen** | IR design, CUDA codegen (Jinja2), MLIR/LLVM (studied), TVM concepts |
 | **AI Frameworks** | PyTorch, HuggingFace Transformers, PEFT, Tokenizers, ONNX |
 | **Distributed & Infra** | NCCL/Gloo, torch.distributed, Tensor Parallelism, Pipeline Parallelism |
-| **Serving & Runtime** | FastAPI, Continuous Batching, KV Cache Management, SSE Streaming |
+| **Serving & Runtime** | FastAPI, Continuous Batching, PagedAttention, KV Cache Management, SSE Streaming |
 | **Backend & Scaling** | Redis (ZSET Rate Limiting), PostgreSQL (ACID), ChromaDB, Prometheus |
 | **DevOps** | Docker Compose, Gunicorn, Nginx, GitHub Actions |
 | **Languages** | C, C++ (17/20), CUDA, PTX, Python, Rust, TypeScript (basic) |
@@ -112,6 +121,9 @@ Currently based in Curitiba, Brazil (GMT-3). Open to relocation worldwide.
 |---|---|
 | **32.4k tok/s** peak throughput | mini-llm-inference-engine |
 | **87% INT8 Tensor Core ceiling** | mini-llm-inference-engine |
+| **6.3x concurrent scaling** | paged-attention-runtime |
+| **1.83M tok/s** at 8 sequences | paged-attention-runtime |
+| **58% memory reduction** prefix sharing | paged-attention-runtime |
 | **10.5 TFLOPS** compiler-generated | llm-fusion-compiler |
 | **Beats cuBLAS** at 2048² GEMM | sm75-tensorcore-microkernel |
 | **1.000 Cosine Similarity** INT4 vs FP16 | fused-int4-gemm-sm75 |
@@ -137,7 +149,6 @@ Led backend architecture and GPU infrastructure decisions.
 - Contributed to [LLM Inference Handbook (llm-inference-at-scale)](https://github.com/harshuljain13/llm-inference-at-scale) — module on observability signal coverage for LLM serving.
 
 ---
-
 
 ## 📬 Connect & Collaborate
 
