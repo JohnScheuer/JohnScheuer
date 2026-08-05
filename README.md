@@ -23,12 +23,13 @@ Currently based in Curitiba, Brazil (GMT-3). Open to relocation worldwide.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
 ### ⚡ paged-attention-runtime
-**PagedAttention from Scratch**
+**PagedAttention from Scratch (Optimized)**
 
 - Custom CUDA implementation of vLLM's core algorithm.
-- **6.3x throughput scaling** at 8 concurrent sequences (1.83M tok/s).
-- **58% memory reduction** with reference-counted prefix sharing.
-- End-to-end Qwen2 integration with logit-level equivalence (< 5e-05 max diff).
+- **2.89M tok/s** at 8 concurrent sequences (**5.32x scaling**).
+- **29x kernel optimization gain** (v1 to v3): warp reduction + online softmax + shared memory tiling + half2 vectorization.
+- **205-397x speedup** vs HuggingFace on attention layer.
+- **66.7% memory reduction** via block-based KV allocation.
 - Block-based KV cache, copy-on-write, GQA-aware attention.
 
 ### ⚡ sm75-tensorcore-microkernel
@@ -121,9 +122,10 @@ Currently based in Curitiba, Brazil (GMT-3). Open to relocation worldwide.
 |---|---|
 | **32.4k tok/s** peak throughput | mini-llm-inference-engine |
 | **87% INT8 Tensor Core ceiling** | mini-llm-inference-engine |
-| **6.3x concurrent scaling** | paged-attention-runtime |
-| **1.83M tok/s** at 8 sequences | paged-attention-runtime |
-| **58% memory reduction** prefix sharing | paged-attention-runtime |
+| **2.89M tok/s** at 8 concurrent sequences | paged-attention-runtime |
+| **29x kernel optimization gain** | paged-attention-runtime |
+| **205-397x vs HuggingFace** (attention layer) | paged-attention-runtime |
+| **66.7% memory reduction** (block allocation) | paged-attention-runtime |
 | **10.5 TFLOPS** compiler-generated | llm-fusion-compiler |
 | **Beats cuBLAS** at 2048² GEMM | sm75-tensorcore-microkernel |
 | **1.000 Cosine Similarity** INT4 vs FP16 | fused-int4-gemm-sm75 |
