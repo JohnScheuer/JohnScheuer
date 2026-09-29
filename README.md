@@ -134,6 +134,7 @@ Production-oriented serving and inference runtime projects.
 | Serving | FastAPI, Continuous Batching, PagedAttention, KV Management, Chunked Prefill |
 | Backend | Redis, PostgreSQL, Prometheus |
 | DevOps | Docker, GitHub Actions |
+| Orchestration | Kubernetes (multi-tenant GPU clusters, custom operators in Go, NVIDIA Device Plugin, MIG, Volcano, Kueue, Ray on K8s) |
 | Languages | C, C++17/20, CUDA, PTX, Python, Rust |
 
 ---
