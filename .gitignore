@@ -1,0 +1,19 @@
+# Local artifacts
+billing.db
+*.db
+*.sqlite
+
+# Nested dirs / separate projects
+JohnScheuer/
+tongyi-translator/
+
+# Backups
+*.backup.*
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# OS
+.DS_Store
