@@ -70,6 +70,15 @@ Production-oriented serving and inference runtime projects.
 - **Repository:** [github.com/JohnScheuer/hybrid-inference-runtime](https://github.com/JohnScheuer/hybrid-inference-runtime)
 
 ---
+### freetoken-throttle-benchmarks (2026)
+**Edge-Native MoE Serving & Statistical Cost Benchmarking**
+
+- Benchmarked **FreeToken** (edge-native MoE engine from UC Berkeley/MIT) on consumer hardware (RTX 5060 8GB) using **Throttle** (statistical cost measurement tool).
+- Discovered a **38% cost reduction** ($1.30/M to $0.81/M output tokens) by tuning concurrency, while correctly identifying a **12% run-to-run noise** caused by system/thermal interference.
+- Validated that consumer GPUs can serve 8B models with 131k context via CPU-GPU offloading, achieving predictable $/M token costs.
+- **Repository:** [github.com/JohnScheuer/freetoken-throttle-benchmarks](https://github.com/JohnScheuer/freetoken-throttle-benchmarks)
+
+---
 
 ### mini-llm-inference-engine
 **Full C++/CUDA Runtime**
