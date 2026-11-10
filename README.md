@@ -71,11 +71,12 @@ Production-oriented serving and inference runtime projects.
 
 ---
 ### freetoken-throttle-benchmarks (2026)
-**Edge-Native MoE Serving & Statistical Cost Benchmarking**
+**Edge-Native Inference & Statistical Cost Benchmarking**
 
-- Benchmarked **FreeToken** (edge-native MoE engine from UC Berkeley/MIT) on consumer hardware (RTX 5060 8GB) using **Throttle** (statistical cost measurement tool).
-- Discovered a **38% cost reduction** ($1.30/M to $0.81/M output tokens) by tuning concurrency, while correctly identifying a **12% run-to-run noise** caused by system/thermal interference.
-- Validated that consumer GPUs can serve 8B models with 131k context via CPU-GPU offloading, achieving predictable $/M token costs.
+- Benchmarked **FreeToken** (edge-native MoE engine from UC Berkeley/MIT) on consumer hardware (RTX 5060 8GB) using **Throttle** (statistical measurement tool).
+- **Dense Baseline:** Achieved $0.81/M tokens (38% cost reduction via concurrency tuning).
+- **MoE Stress Test:** Served a 21B-parameter MoE (`gpt-oss-20b`) on an 8GB GPU, rigorously measuring the **$19.17/M token cost** caused by CPU-GPU offloading bottlenecks.
+- Validated that while consumer GPUs can serve dense models cost-effectively, frontier MoE models require ≥16GB VRAM for viable production economics.
 - **Repository:** [github.com/JohnScheuer/freetoken-throttle-benchmarks](https://github.com/JohnScheuer/freetoken-throttle-benchmarks)
 
 ---
