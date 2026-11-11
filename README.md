@@ -165,7 +165,7 @@ Production-oriented serving and inference runtime projects.
 
 | Achievement | Project / Platform |
 |-------------|---------|
-| 68.4× throughput collapse (WDDM paging)** | RTX 5060 (wddm-paging-simulator) |
+| 68.4× throughput collapse (WDDM paging) | RTX 5060 (wddm-paging-simulator) |
 | 83.5% silicon efficiency (317 / 380 TFLOPS) | Ascend 910B2 physical characterization |
 | 1189.25 GB/s HBM2e saturation | Ascend 910B2 memory subsystem |
 | 1378.62 GB/s HBM2e write peak | Ascend 910B2 R/W asymmetry |
