@@ -71,12 +71,24 @@ Production-oriented serving and inference runtime projects.
 
 ---
 
-### wddm-paging-simulator (2026)
-**Empirical Proof of WDDM Paging Collapse (68.4x)**
+### cross-arch-kernel-porting (2026)
+**LayerNorm Kernel: CUDA C++ vs Hand-Written PTX vs Ascend C**
 
-- Quantified the catastrophic throughput collapse when a GPU's physical VRAM is oversubscribed on Windows. Forced WDDM to page memory to system RAM over PCIe Gen4.
-- **Measured on RTX 5060 (8 GB): 9.13 → 0.13 TFLOPS (68.4× latency collapse).** P99 latency spiked from 3.01 ms to 169.49 ms.
-- Proved that the theoretical bandwidth ratio (14×) drastically underestimates the real collapse due to page-fault overhead, TLB thrashing, PCIe contention with the Windows compositor, and variance explosion.
+- Implemented the same memory-bound LayerNorm kernel across three abstraction layers: CUDA C++ (SM-120), hand-written PTX (SM-120), and Ascend C (CANN 8.x).
+- **Key finding:** Hand-written PTX with `ld.global.nc` was **4.3% slower** than `nvcc -O3` auto-vectorized code. Root cause: `.nc` bypasses L1 cache, which hurts multi-pass kernels (LayerNorm reads data 3 times). This demonstrates the importance of knowing *when not* to hand-tune.
+- Demonstrated the architectural differences between NVIDIA's warp-synchronous model and Huawei's explicit triple-pipe (MTE/Vector/Cube) architecture.
+- **Repository:** [github.com/JohnScheuer/cross-arch-kernel-porting](https://github.com/JohnScheuer/cross-arch-kernel-porting)
+
+---
+
+#### wddm-paging-simulator (2026)
+**Empirical Proof of WDDM Paging Collapse (up to 1013x)**
+
+- Quantified the catastrophic throughput collapse when a GPU's physical VRAM is oversubscribed on Windows. Forced WDDM to page memory to system RAM (and eventually to the SSD) over PCIe Gen4.
+- **Measured on RTX 5060 (8 GB):**
+  - Run 1 (RAM available): **68.4× collapse** (P99: 3.01 ms → 169.49 ms, TFLOPS: 9.13 → 0.13).
+  - Run 2 (RAM under pressure): **1013.1× collapse** (P99: 2.41 ms → 2797.32 ms, TFLOPS: 9.17 → 0.01).
+- Proved that the penalty is not just the PCIe vs GDDR7 bandwidth ratio (14×). It depends on the entire OS memory hierarchy: when VRAM overflows and RAM is tight, the OS pages to the SSD, turning a memory-bound kernel into a disk-bound kernel.
 - **Justifies strict physical-VRAM Admission Control in LLM runtimes** (vLLM, TGI) before OS-level paging destroys tail latency.
 - **Repository:** [github.com/JohnScheuer/wddm-paging-simulator](https://github.com/JohnScheuer/wddm-paging-simulator)
 
@@ -165,7 +177,7 @@ Production-oriented serving and inference runtime projects.
 
 | Achievement | Project / Platform |
 |-------------|---------|
-| 68.4× throughput collapse (WDDM paging) | RTX 5060 (wddm-paging-simulator) |
+| 1013× throughput collapse (WDDM paging to SSD) | RTX 5060 (wddm-paging-simulator) |
 | 83.5% silicon efficiency (317 / 380 TFLOPS) | Ascend 910B2 physical characterization |
 | 1189.25 GB/s HBM2e saturation | Ascend 910B2 memory subsystem |
 | 1378.62 GB/s HBM2e write peak | Ascend 910B2 R/W asymmetry |
