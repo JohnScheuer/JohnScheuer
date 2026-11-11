@@ -70,6 +70,18 @@ Production-oriented serving and inference runtime projects.
 - **Repository:** [github.com/JohnScheuer/hybrid-inference-runtime](https://github.com/JohnScheuer/hybrid-inference-runtime)
 
 ---
+
+### wddm-paging-simulator (2026)
+**Empirical Proof of WDDM Paging Collapse (68.4x)**
+
+- Quantified the catastrophic throughput collapse when a GPU's physical VRAM is oversubscribed on Windows. Forced WDDM to page memory to system RAM over PCIe Gen4.
+- **Measured on RTX 5060 (8 GB): 9.13 → 0.13 TFLOPS (68.4× latency collapse).** P99 latency spiked from 3.01 ms to 169.49 ms.
+- Proved that the theoretical bandwidth ratio (14×) drastically underestimates the real collapse due to page-fault overhead, TLB thrashing, PCIe contention with the Windows compositor, and variance explosion.
+- **Justifies strict physical-VRAM Admission Control in LLM runtimes** (vLLM, TGI) before OS-level paging destroys tail latency.
+- **Repository:** [github.com/JohnScheuer/wddm-paging-simulator](https://github.com/JohnScheuer/wddm-paging-simulator)
+
+---
+
 ### freetoken-throttle-benchmarks (2026)
 **Edge-Native Inference & Statistical Cost Benchmarking**
 
@@ -153,6 +165,7 @@ Production-oriented serving and inference runtime projects.
 
 | Achievement | Project / Platform |
 |-------------|---------|
+| 68.4× throughput collapse (WDDM paging)** | RTX 5060 (wddm-paging-simulator) |
 | 83.5% silicon efficiency (317 / 380 TFLOPS) | Ascend 910B2 physical characterization |
 | 1189.25 GB/s HBM2e saturation | Ascend 910B2 memory subsystem |
 | 1378.62 GB/s HBM2e write peak | Ascend 910B2 R/W asymmetry |
