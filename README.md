@@ -124,6 +124,16 @@ Production-oriented serving and inference runtime projects.
 - **Repository:** [github.com/JohnScheuer/neuromorphic-snn-sim](https://github.com/JohnScheuer/neuromorphic-snn-sim)
 
 ---
+### snn-surrogate-gradients (2026)
+**Spiking Neural Network Training with Surrogate Gradients**
+
+- Implemented a Leaky Integrate-and-Fire (LIF) SNN from scratch in PyTorch using Backpropagation Through Time (BPTT) and surrogate gradients (straight-through estimator).
+- **Achieved 95.0% accuracy on MNIST with only T=10 timesteps**, maintaining 78% sparsity.
+- Quantified the accuracy-sparsity-energy-latency design space: demonstrated that accuracy saturates at T≈10, and that the **43.9× energy advantage** on neuromorphic hardware (Loihi 2) decreases with more timesteps (down to 2.4× at T=200).
+- Implemented a custom Pareto front analysis (V_th vs. accuracy vs. sparsity) to identify the optimal deployment region.
+- **Repository:** [github.com/JohnScheuer/snn-surrogate-gradients](https://github.com/JohnScheuer/snn-surrogate-gradients)
+
+---
 
 ### sm75-tensorcore-microkernel
 **PTX-Level GEMM Engineering**
