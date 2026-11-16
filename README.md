@@ -114,6 +114,16 @@ Production-oriented serving and inference runtime projects.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
 ---
+### neuromorphic-snn-sim (2026)
+**Spiking Neural Network vs Dense MLP: The Sparsity Paradox**
+
+- Implemented a Leaky Integrate-and-Fire (LIF) SNN from scratch in PyTorch and compared it against a dense MLP on a motor control task.
+- **Measured 98.34% sparsity** (only ~17 of 1000 neurons fire per timestep), but the SNN was **276× slower on GPU** due to sequential timesteps and sparse operation inefficiency.
+- **Key insight:** 98% sparsity only translates to 1.2× fewer FLOPs on a GPU because the hardware charges for empty timesteps. The full **122× energy advantage** only materializes on event-driven neuromorphic silicon (Loihi 2, SpiNNaker 2).
+- Demonstrated that algorithm (SNN), hardware (neuromorphic), and workload (sparse/temporal) must co-design for real-world advantage.
+- **Repository:** [github.com/JohnScheuer/neuromorphic-snn-sim](https://github.com/JohnScheuer/neuromorphic-snn-sim)
+
+---
 
 ### sm75-tensorcore-microkernel
 **PTX-Level GEMM Engineering**
