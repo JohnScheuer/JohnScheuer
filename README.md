@@ -124,6 +124,15 @@ Production-oriented serving and inference runtime projects.
 - **Repository:** [github.com/JohnScheuer/neuromorphic-snn-sim](https://github.com/JohnScheuer/neuromorphic-snn-sim)
 
 ---
+### stdp-learning-on-loihi-sim (2026)
+**Reward-Modulated STDP for Neuromorphic Inference (O(1) Memory)**
+
+- Implemented Reward-Modulated Spike-Timing-Dependent Plasticity (R-STDP) in PyTorch, training a Spiking Neural Network to **96.4% accuracy on binary MNIST** without backpropagation.
+- **Memory footprint is O(1)** regardless of simulation length. At T=10,000, BPTT uses 596 MB while R-STDP uses 68.8 MB (8.66× reduction), preventing OOM crashes.
+- Demonstrated **continual learning** with zero catastrophic forgetting (frozen weights, mean |ΔW| = 0.000000) when expanding from 2 to 4 classes.
+- **Repository:** [github.com/JohnScheuer/stdp-learning-on-loihi-sim](https://github.com/JohnScheuer/stdp-learning-on-loihi-sim)
+
+---
 ### snn-surrogate-gradients (2026)
 **Spiking Neural Network Training with Surrogate Gradients**
 
