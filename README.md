@@ -114,6 +114,16 @@ Production-oriented serving and inference runtime projects.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
 ---
+### bci-neuromorphic-sim (2026)
+**Real-Time Brain-Computer Interface with Neuromorphic Decoding**
+
+- Implemented a closed-loop BCI simulator bridging Izhikevich (2003) biological neuron dynamics with a hardware-accelerated R-STDP decoder.
+- **Achieved 1.18 ms per-trial latency** (sub-millisecond) vs. 12.80 ms for a BPTT LSTM baseline, staying below the 10ms biological closed-loop limit.
+- **Memory footprint is O(1)** (100.5 MB at T=1000ms), while the BPTT baseline scales to 683.9 MB (6.8× reduction). 
+- Decoded 4 motor intentions (Up/Down/Left/Right) from a 128-channel cortical spike array with 90.2% accuracy.
+- **Repository:** [github.com/JohnScheuer/bci-neuromorphic-sim](https://github.com/JohnScheuer/bci-neuromorphic-sim)
+
+---
 ### neuromorphic-snn-sim (2026)
 **Spiking Neural Network vs Dense MLP: The Sparsity Paradox**
 
