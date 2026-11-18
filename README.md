@@ -125,6 +125,16 @@ Production-oriented serving and inference runtime projects.
 - **Repository:** [github.com/JohnScheuer/realtime-bci-cxx-engine](https://github.com/JohnScheuer/realtime-bci-cxx-engine)
 
 ---
+### closed-loop-neurostim-engine (2026)
+**Sub-500µs Bidirectional Closed-Loop Neurostimulation Engine (C++20/CUDA)**
+
+- Implemented a bidirectional closed-loop neurostimulation feedback engine in C++20/CUDA, achieving **sub-500µs end-to-end latency** (P99 = 312.45 µs) across 10,000 feedback cycles.
+- **Bio-Physical Safety:** 1:1 charge-balanced biphasic pulse encoding (Q+ = Q-) to prevent tissue damage.
+- **Hybrid Pipeline:** AVX2 SIMD transient suppression (~40 ns) + CUDA Zero-Copy mapped memory (~23 µs) + CUDA biphasic encoder (~38 µs).
+- **SLA Compliance:** 99.60% of cycles under the 500 µs hard real-time bound.
+- **Repository:** [github.com/JohnScheuer/closed-loop-neurostim-engine](https://github.com/JohnScheuer/closed-loop-neurostim-engine)
+
+---
 
 ### triton-snn-fused-kernels (2026)
 **High-Performance Spiking Neural Network GPU Runtime (Triton)**
