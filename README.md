@@ -158,6 +158,17 @@ Production-oriented serving and inference runtime projects.
 - **Repository:** [github.com/JohnScheuer/triton-snn-fused-kernels](https://github.com/JohnScheuer/triton-snn-fused-kernels)
 
 ---
+### cybernetic-retinal-prosthetic-engine (2026)
+**Sub-500µs Cybernetic Retinal Prosthetic Engine (1024 Channels)**
+
+- Implemented a real-time synthetic vision-to-neural stimulation bridge in C++20/CUDA for next-generation retinal prosthetics (1000 FPS / 1000 Hz).
+- **Bio-Physical Rigor:** Dual parallel ON/OFF retinal pathways (512+512 channels) with Difference-of-Gaussians (DoG) receptive fields.
+- **ISO 14708-3 Safety:** Sub-dermal thermal sentinel (max temp rise 0.12°C, 76% safety margin) and photonic density caps.
+- **Kiroshi Saccadic Controller:** Dampens stimulation during high-velocity eye movements (>300°/s) to prevent cortical flash overload.
+- **Sub-Millisecond Latency:** P50 = 120.57 µs, P99 = 421.48 µs (0.63% SLA violation rate).
+- **Repository:** [github.com/JohnScheuer/cybernetic-retinal-prosthetic-engine](https://github.com/JohnScheuer/cybernetic-retinal-prosthetic-engine)
+
+---
 
 ### cortical-column-sim (2026)
 **Real-Time Cortical Column Simulation (10,000 Neurons / 10M Synapses)**
