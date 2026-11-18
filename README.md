@@ -114,6 +114,17 @@ Production-oriented serving and inference runtime projects.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
 ---
+### neural-lace-hippocampal-memory-engine (2026)
+**Sub-Millisecond Hippocampal Memory Encoding/Retrieval Coprocessor**
+
+- Implemented a real-time hippocampal memory coprocessor in C++20/CUDA, bridging 2048 DG/CA3 input channels with a 4096-channel CA1 stimulation array.
+- **Bio-Physical Rigor:** 2nd-order Volterra SIMD expansion (DG/CA3 pattern separation), Lisman-Jensen Theta-Gamma phase locking (LTP/LTD), and Mexican-hat spatial inhibition.
+- **ISO 14708-3 Safety:** Pennes bioheat model with 100ms sliding window (max tissue rise 0.1586°C, 68% safety margin).
+- **Sub-Millisecond Latency:** P50 = 119.96 µs, P99 = 520.92 µs (steady-state, excluding cold-start transient).
+- **Repository:** [github.com/JohnScheuer/neural-lace-hippocampal-memory-engine](https://github.com/JohnScheuer/neural-lace-hippocampal-memory-engine)
+
+---
+
 ### synthetic-spinal-cord-bridge (2026)
 **Sub-500µs Closed-Loop Epidural Electrical Stimulation (EES) Engine**
 
