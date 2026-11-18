@@ -114,6 +114,17 @@ Production-oriented serving and inference runtime projects.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
 ---
+### synthetic-spinal-cord-bridge (2026)
+**Sub-500µs Closed-Loop Epidural Electrical Stimulation (EES) Engine**
+
+- Implemented a clinically-grounded synthetic spinal cord bridge in C++20/CUDA, restoring motor function after spinal cord injury (SCI) by bridging motor cortex intent to 64-channel EES patterns.
+- **ISO 14708-3 Compliance:** Hardware-enforced bio-safety sentinel (charge density limits, 1:1 biphasic balance, current headroom).
+- **Sub-Millisecond Latency:** P50 = 51.21 µs, P99 = 172.27 µs (0.03% SLA violation rate).
+- **Adaptive CPG:** Matsuoka-Kuramoto phase oscillator generating biologically plausible stance/swing gait dynamics.
+- **Repository:** [github.com/JohnScheuer/synthetic-spinal-cord-bridge](https://github.com/JohnScheuer/synthetic-spinal-cord-bridge)
+
+---
+
 ### realtime-bci-cxx-engine (2026)
 **Sub-Millisecond C++20/CUDA Zero-Copy BCI Inference Engine**
 
