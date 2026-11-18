@@ -114,6 +114,16 @@ Production-oriented serving and inference runtime projects.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
 ---
+### cortical-column-sim (2026)
+**Real-Time Cortical Column Simulation (10,000 Neurons / 10M Synapses)**
+
+- Implemented an event-driven cortical column simulator in CUDA-accelerated PyTorch, replicating biological neocortical microcircuits (Izhikevich 2003, Dale's Law).
+- **Achieved 0.68x Real-Time Factor (1.46 ms per 1.0ms biological step)** with 8.71× speedup over dense outer-product STDP baselines.
+- **O(1) flat memory scaling** (1.16 GB constant), while BPTT hits OOM (14.7 GB) at T=5,000 steps.
+- Demonstrated the foundation for sub-millisecond neuroprosthetics, closed-loop BCIs, and whole-brain emulation.
+- **Repository:** [github.com/JohnScheuer/cortical-column-sim](https://github.com/JohnScheuer/cortical-column-sim)
+
+---
 ### bci-neuromorphic-sim (2026)
 **Real-Time Brain-Computer Interface with Neuromorphic Decoding**
 
