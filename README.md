@@ -114,6 +114,19 @@ Production-oriented serving and inference runtime projects.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
 ---
+
+### triton-snn-fused-kernels (2026)
+**High-Performance Spiking Neural Network GPU Runtime (Triton)**
+
+- Implemented a suite of fused OpenAI Triton kernels for SNNs, Spiking Transformers, and on-chip plasticity.
+- **Fused LIF Neuron:** 1.20× speedup over PyTorch eager mode at 10M elements.
+- **Fused 2D STDP Plasticity:** 6.23× speedup at 4.19M synapses.
+- **Fused Causal Spiking Attention:** 7.32× speedup at sequence length T=2048.
+- Eliminated redundant VRAM round-trips by fusing ODE integration, spike thresholding, surrogate gradients, and causal attention into single SRAM-resident thread blocks.
+- **Repository:** [github.com/JohnScheuer/triton-snn-fused-kernels](https://github.com/JohnScheuer/triton-snn-fused-kernels)
+
+---
+
 ### cortical-column-sim (2026)
 **Real-Time Cortical Column Simulation (10,000 Neurons / 10M Synapses)**
 
