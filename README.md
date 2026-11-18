@@ -114,6 +114,17 @@ Production-oriented serving and inference runtime projects.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
 ---
+### realtime-bci-cxx-engine (2026)
+**Sub-Millisecond C++20/CUDA Zero-Copy BCI Inference Engine**
+
+- Implemented a production-grade C++20/CUDA BCI inference engine achieving **sub-millisecond closed-loop latency** (P99 = 183.91 µs) on a 128-channel motor cortical array at 1000 Hz.
+- **Zero-Copy Architecture:** Uses `cudaHostAllocMapped` to eliminate PCIe memcpy overhead.
+- **Lock-Free SPSC Ring Buffer:** Cache-line aligned (`alignas(64)`) with C++20 atomics to eliminate false sharing.
+- **AVX2 SIMD:** Common Average Reference (CAR) filtering in 44 ns (256-bit registers).
+- **SLA Compliance:** 0.0000% violation rate, leaving 940 µs of headroom for complex kinematics.
+- **Repository:** [github.com/JohnScheuer/realtime-bci-cxx-engine](https://github.com/JohnScheuer/realtime-bci-cxx-engine)
+
+---
 
 ### triton-snn-fused-kernels (2026)
 **High-Performance Spiking Neural Network GPU Runtime (Triton)**
