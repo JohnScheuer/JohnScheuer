@@ -283,6 +283,16 @@ Production-oriented serving and inference runtime projects.
 - Templated CUDA generation with type/shape specialization.
 
 ---
+### realtime-bilingual-voice-engine (2026)
+**Offline Real-Time Speech Translation with CUDA Whisper & AVX2 VAD**
+
+- Implemented a 100% offline real-time bilingual voice engine in C++20/CUDA, designed for live technical interviews and streaming translation (English ↔ Mandarin/Portuguese).
+- **Ultra-Low Latency Hot-Path:** AVX2 SIMD VAD (P99 = 7.53 µs) and lock-free SPSC ring buffer (>125M samples/sec).
+- **Async CUDA Whisper FP16:** 1.5-second sliding window with local agreement text stabilization (<300 ms SLA) to prevent word-flickering.
+- **Zero-Dependency Audio:** WASAPI Loopback (Windows) / PulseAudio (Linux) for capturing system audio from Zoom, Meet, or WeChat.
+- **Repository:** [github.com/JohnScheuer/realtime-bilingual-voice-engine](https://github.com/JohnScheuer/realtime-bilingual-voice-engine)
+
+---
 
 ## Selected R&D Systems
 
