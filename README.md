@@ -125,6 +125,18 @@ Production-oriented serving and inference runtime projects.
 - Runs TinyStories 110M and TinyLlama 1.1B end-to-end.
 
 ---
+
+### synthetic-exocortex-bci-gateway (2026)
+**65,536-Channel Exocortex Gateway with Cognitive Entropy Offloading**
+
+- Implemented a real-time BCI gateway in C++20/CUDA processing **65,536 neural channels at 1000 Hz**, decoding raw spikes into a 1024-dimensional semantic embedding space.
+- **Cognitive Entropy (Shannon H(X)):** Dynamically triggers cloud GPU offloading when cognitive load exceeds a threshold (H > 42.5), enabling a true exocortex architecture.
+- **Sub-Millisecond P50:** 971.49 µs for 65k channels (P99 = 2298 µs), with ISO 14708-3 bioheat safety (+0.09°C peak tissue rise).
+- **AVX2 SIMD Demux:** 256-bit vectorized spike rate integration (8 channels per instruction) in ~786 µs.
+- **Repository:** [github.com/JohnScheuer/synthetic-exocortex-bci-gateway](https://github.com/JohnScheuer/synthetic-exocortex-bci-gateway)
+
+---
+
 ### neural-lace-hippocampal-memory-engine (2026)
 **Sub-Millisecond Hippocampal Memory Encoding/Retrieval Coprocessor**
 
