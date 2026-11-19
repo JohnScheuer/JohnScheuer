@@ -92,6 +92,28 @@ Production-oriented serving and inference runtime projects.
 
 ---
 
+### dit-video-cache-accelerator (2026)
+**Video DiT Feature Cache Accelerator (1.649x Speedup, INT8)**
+
+- Implemented a spatio-temporal residual feature caching engine for multi-step Video Diffusion Transformers (Sora, Wan 2.1, Vidu), accelerating 50-step video denoising by **1.649× (39.37% time saved)**.
+- **Fused 3D-RoPE + RMSNorm CUDA Kernel:** Eliminates intermediate global memory writes.
+- **Layer-Asymmetric Drift Scheduler (AVX2):** Computes L1 drift and cosine similarity in SIMD, achieving a **65.67% cache hit rate**.
+- **Dynamic INT8 Quantized Cache:** Reduces VRAM footprint from 906 MB to 453 MB with **0.9988 cosine similarity**.
+- **Repository:** [github.com/JohnScheuer/dit-video-cache-accelerator](https://github.com/JohnScheuer/dit-video-cache-accelerator)
+
+---
+
+### disaggregated-kv-transport-engine (2026)
+**Disaggregated Prefill-Decode KV-Cache Transport & FP8/INT8 Compression**
+
+- Implemented a production-grade disaggregated KV-cache transport engine in C++20/CUDA, inspired by Mooncake, DistServe, and NVIDIA Dynamo.
+- **Prefill-Decode Disaggregation:** Eliminates 25-50ms TPOT spikes by decoupling compute-bound Prefill from memory-bound Decode.
+- **FP8/INT8 Compression:** 2.0× bandwidth savings (31.25 MB vs 62.50 MB) with 38.45 dB SQNR (cosine similarity 0.999995).
+- **Sub-Millisecond Handoff:** P50 = 0.144 ms, P99 = 0.639 ms.
+- **Repository:** [github.com/JohnScheuer/disaggregated-kv-transport-engine](https://github.com/JohnScheuer/disaggregated-kv-transport-engine)
+
+---
+
 ### paged-kv-cache-engine (2026)
 **Virtual Memory Allocator & Fused PagedAttention CUDA Kernel**
 
