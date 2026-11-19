@@ -92,6 +92,18 @@ Production-oriented serving and inference runtime projects.
 
 ---
 
+### paged-kv-cache-engine (2026)
+**Virtual Memory Allocator & Fused PagedAttention CUDA Kernel**
+
+- Implemented a production-grade virtual KV-cache memory manager in C++20/CUDA, inspired by OS paging and vLLM.
+- **VRAM Fragmentation Elimination:** 49.23% memory savings (519.88 MB vs 1024.00 MB for 64 sequences) via 16-token block paging.
+- **Copy-on-Write (CoW) Prefix Caching:** 100% LRU cache hit rate for shared system prompts, reducing VRAM usage from 250 MB to ~10 MB for 1024-token prefixes.
+- **Fused PagedAttention v2:** 128-bit vectorized FP16 loads (`uint4`) and warp-level reduction (`__shfl_down_sync`), eliminating intermediate matrix materialization.
+- **Performance Gains:** 3.06× TTFT speedup, 2.51× decode speedup, 2.85× throughput gain (8,840 tokens/sec).
+- **Repository:** [github.com/JohnScheuer/paged-kv-cache-engine](https://github.com/JohnScheuer/paged-kv-cache-engine)
+
+---
+
 #### wddm-paging-simulator (2026)
 **Empirical Proof of WDDM Paging Collapse (up to 1013x)**
 
