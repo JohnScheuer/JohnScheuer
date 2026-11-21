@@ -374,6 +374,16 @@ Production-oriented serving and inference runtime projects.
 - **vLLM (PagedAttention + Continuous Batching):** 5,731.74 tok/s (0.36 s for the same workload).
 - **Speedup:** **12.75×** throughput gain. Proves that PagedAttention (zero fragmentation) and Continuous Batching are mandatory for production LLM serving.
 
+### H200 Roofline Analysis (2026)
+**Empirical Proof that LLM Decode is Memory-Bound**
+
+- **Measured Bandwidth:** 4095.50 GB/s (HBM3e).
+- **Hardware Ridge Point (BF16):** 171.17 FLOP/Byte.
+- **Prefill (T=2048):** 61.55 ms, 506.83 TFLOPS (72.3% of BF16 peak). Arithmetic Intensity: 2048 FLOP/Byte (compute-bound).
+- **Decode (T=1, B=1):** 8.84 ms, 1.72 TFLOPS. Arithmetic Intensity: 1.0 FLOP/Byte (memory-bound).
+- **Decode Floor:** 3.72 ms (weights / bandwidth). Effective bandwidth: 1722.9 GB/s (42.1% of peak).
+- **Conclusion:** Decode is 294.1× lower compute utilization than Prefill. Optimizations must target memory bandwidth (PagedAttention, KV Cache compression, PD Disaggregation), not FLOPs.
+
 
 | Achievement | Project / Platform |
 |-------------|---------|
