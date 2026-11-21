@@ -367,6 +367,13 @@ Production-oriented serving and inference runtime projects.
 - **Prefill vs Decode:** TTFT scales linearly with prompt length (12.3 ms at 128 tokens to 118.9 ms at 4096 tokens), while TPOT remains constant at ~31 ms. **Proved that LLM Decode is strictly memory-bandwidth-bound.**
 - **Batch Scaling:** Throughput scales linearly (26.9 tok/s at batch 1 to 1028.8 tok/s at batch 32) while per-user TPOT stays flat (~31 ms), validating the need for Continuous Batching.
 
+### H200 vLLM vs HuggingFace Baseline (2026)
+**Benchmarked on NVIDIA H200 NVL (139.8 GB HBM3e), Qwen2.5-7B-Instruct BF16**
+
+- **HuggingFace (Naive):** 449.50 tok/s (4.56 s for 32 prompts × 64 tokens).
+- **vLLM (PagedAttention + Continuous Batching):** 5,731.74 tok/s (0.36 s for the same workload).
+- **Speedup:** **12.75×** throughput gain. Proves that PagedAttention (zero fragmentation) and Continuous Batching are mandatory for production LLM serving.
+
 
 | Achievement | Project / Platform |
 |-------------|---------|
