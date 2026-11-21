@@ -358,6 +358,16 @@ Production-oriented serving and inference runtime projects.
 
 ## Selected Quantitative Results
 
+### H200 Hardware Characterization (2026)
+**Benchmarked on NVIDIA H200 NVL (SM90, 139.8 GB HBM3e)**
+
+- **Pure VRAM Bandwidth:** 4094.60 GB/s (HBM3e).
+- **BF16 Tensor Core Peak:** 701.02 TFLOPS.
+- **Hardware Ridge Point:** 171.21 FLOP/Byte. Any kernel below this threshold (e.g., Decode, PagedAttention, LayerNorm) is **memory-bound**.
+- **Prefill vs Decode:** TTFT scales linearly with prompt length (12.3 ms at 128 tokens to 118.9 ms at 4096 tokens), while TPOT remains constant at ~31 ms. **Proved that LLM Decode is strictly memory-bandwidth-bound.**
+- **Batch Scaling:** Throughput scales linearly (26.9 tok/s at batch 1 to 1028.8 tok/s at batch 32) while per-user TPOT stays flat (~31 ms), validating the need for Continuous Batching.
+
+
 | Achievement | Project / Platform |
 |-------------|---------|
 | 1013× throughput collapse (WDDM paging to SSD) | RTX 5060 (wddm-paging-simulator) |
